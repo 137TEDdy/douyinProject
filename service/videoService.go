@@ -5,24 +5,58 @@
 
 package service
 
-import "fmt"
+import (
+	"douyinProject/config"
+	"douyinProject/repo"
+	"douyinProject/utils"
+	"log"
+	"os/exec"
+	"path/filepath"
+	"strings"
+)
 import . "douyinProject/model"
-import . "douyinProject/common"
 
-func GetVideoList() []*Video {
-	var videoList []*Video
+func GetVideoList() ([]*Video, error) {
+	videoList, err := repo.GetVideoList()
+	return videoList, err
+}
 
-	//DB是gorm.DB，是common包下的database.go的全局变量，这里直接使用
-	DB.Find(&videoList) //!:  可以加上limit
-	for _, item := range videoList {
-		id := item.AuthorId
-		var user User
-		if id == 0 { //id不能为0
-			continue
-		}
-		DB.Where("user_id=?", id).Take(&user) //查找该用户
-		fmt.Println("User:", user)
-		item.Author = user
+// 根据用户id查出用户，以及对应的视频
+func GetVideoListByUserId(userId int) ([]*Video, error) {
+	videolist, err := repo.GetVideoListByUserID(userId)
+	return videolist, err
+}
+
+func StoreVideo(user User, title, videoUrl, coverUrl string) error {
+	video := Video{
+		Author:      user,
+		Title:       title,
+		AuthorId:    user.Id,
+		PlayUrl:     videoUrl,
+		CoverUrl:    coverUrl,
+		PublishTime: utils.GetCurrentTime(),
 	}
-	return videoList
+	err := repo.StoreVideo(video)
+	return err
+}
+
+func GetImage(videoPath string) string {
+	imageBasePath := config.GetConfig().Path.ImageBasePath
+	arrs := strings.Split(videoPath, "\\") //分割视频路径，取出视频名
+	lastName := arrs[len(arrs)-1]
+	lastName = lastName[:len(lastName)-4] + ".jpg" //获取  xxx.mp4里的xxx，变成xxx.jpg
+
+	outputPath := filepath.Join(imageBasePath, lastName) // D:\2\xxx.jpg
+	log.Println("VideoPath: ", videoPath, "   ouputPath: ", outputPath)
+	// 指定FFmpeg命令和参数，截取1s处图片
+	cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "1", "-f", "image2", "-t", "0.01", "-y", outputPath)
+	//cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "00:00:01", "-vframes", "1", "-y", outputPath) 这个无法执行
+
+	// 执行FFmpeg命令
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal("ffmpeg出现错误:", err)
+	}
+	log.Println("视频截图已保存到", outputPath)
+	return outputPath
 }

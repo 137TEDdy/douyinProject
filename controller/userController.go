@@ -8,7 +8,7 @@ package controller
 import (
 	"douyinProject/common"
 	. "douyinProject/model"
-	"douyinProject/utils"
+	"douyinProject/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -27,27 +27,33 @@ func Register(c *gin.Context) {
 	//fmt.Println(username, "  ", password)
 
 	//token := username + password
-	//2.验证： 判断username是否存在
-	if _, flag := utils.GetUserByName(username); flag {
-		c.JSON(422, common.Response{-1, "用户名已存在"})
+	//2.验证： 判断username是否存在,  存在err说明没有这个用户名
+	if _, err := service.GetUserByName(username); err == nil {
+		c.JSON(422, common.Response{-1, "用户已经存在"})
+		log.Println("用户已经存在")
 		return
 	}
 	//对密码进行加密
 	hasedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(500, common.Response{-1, "加密错误"})
+		log.Println("加密错误")
 		return
 	}
 	//fmt.Println("加密密码：", hasedPassword)
 	//4.创建用户
-	user := User{
-		Name:     username,
-		Password: string(hasedPassword),
-	}
-	common.DB.Create(&user)
+	service.CreateUser(username, string(hasedPassword))
 
+	user, err := service.GetUserByName(username)
 	token, err := common.ReleaseToken(user) //获取随机token
-	LastUserId := utils.GetLastUserId() + 1 //查询最后一位用户的id，用于自增+1作为新用户的id
+	LastUserId, err := service.GetLastUserId()
+	//查询最后一位用户的id，用于自增+1作为新用户的id
+	if err != nil {
+		c.JSON(500, common.Response{-1, "获取用户信息或token错误"})
+		log.Println("获取用户信息或token错误")
+		return
+	}
+	LastUserId++
 	//fmt.Println("user：", user)
 	//.返回结果
 	c.JSON(200, common.UserLoginResponse{
@@ -72,8 +78,9 @@ func Login(c *gin.Context) {
 
 	//2.验证： 判断username是否存在
 	var user User
-	if userTmp, flag := utils.GetUserByName(username); !flag {
-		c.JSON(422, common.Response{-1, "用户名不存在"})
+	if userTmp, err := service.GetUserByName(username); err != nil {
+		c.JSON(422, common.Response{-1, "用户不存在"})
+		log.Println(err.Error())
 		return
 	} else {
 		user = userTmp //如果存在，则为user赋值
@@ -83,13 +90,14 @@ func Login(c *gin.Context) {
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		//如果有err，说明密码错误
 		c.JSON(400, common.Response{-1, "密码错误"})
+		log.Println("密码错误")
 		return
 	}
 	//发放token
 	token, err := common.ReleaseToken(user)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.Response{-1, "token发放失败"})
-		log.Printf("token generate error: %v", err)
+		log.Printf("token生成错误: %v", err)
 		return
 	}
 	//3.返回
