@@ -7,6 +7,7 @@ package utils
 
 import "time"
 
+// 返回当前时间
 func GetCurrentTime() int64 {
 	return time.Now().Unix()
 }

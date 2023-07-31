@@ -21,6 +21,7 @@ func GetUserByName(username string) (model.User, error) {
 	return user, err
 }
 
+// 获取最后一个用户的id
 func GetLastUserId() (int64, error) {
 	id, err := repo.GetLastUserId()
 	return id, err

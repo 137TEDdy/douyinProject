@@ -40,6 +40,7 @@ func StoreVideo(user User, title, videoUrl, coverUrl string) error {
 	return err
 }
 
+// 使用ffmpeg，截取视频的第一秒作为视频封面，并存储到outputpath里
 func GetImage(videoPath string) string {
 	imageBasePath := config.GetConfig().Path.ImageBasePath
 	arrs := strings.Split(videoPath, "\\") //分割视频路径，取出视频名

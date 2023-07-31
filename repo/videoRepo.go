@@ -12,6 +12,7 @@ import (
 	"log"
 )
 
+// 获取视频列表
 func GetVideoList() ([]*model.Video, error) {
 	var videoList []*model.Video
 	if err := common.DB.Find(&videoList).Error; err != nil {
@@ -33,6 +34,7 @@ func GetVideoList() ([]*model.Video, error) {
 	return videoList, nil
 }
 
+// 根据用户id获取视频列表
 func GetVideoListByUserID(userId int) ([]*model.Video, error) {
 	var videoList []*model.Video
 	if err := common.DB.Where("author_id=?", userId).Find(&videoList).Error; err != nil { //不要忘加&

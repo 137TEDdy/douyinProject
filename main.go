@@ -15,10 +15,8 @@ func Init() {
 }
 
 func main() {
-
 	r := gin.Default()
 	RouteInit(r)
 	Init()
 	r.Run(":9093")
-	//Test()
 }

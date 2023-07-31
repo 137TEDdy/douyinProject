@@ -15,6 +15,7 @@ import (
 	"strings"
 )
 
+// 封装minio的各种属性
 type Minio struct {
 	MinioClient   *minio.Client
 	endpoint      string
@@ -30,6 +31,7 @@ func GetClient() Minio {
 	return Client
 }
 
+// 初始化minio
 func InitMinio() {
 	conf := config.GetConfig() //读取配置
 	endpoint := conf.Minio.Host
@@ -54,6 +56,7 @@ func InitMinio() {
 	Client = Minio{minioClient, endpoint, port, videoBucket, imagesBucket, videoBasePath}
 }
 
+// 创建minio的桶（类似数据库的表）
 func creatBucket(m *minio.Client, bucketName string) {
 
 	isExist, err := m.BucketExists(bucketName) //判断bucket是否存在
@@ -82,6 +85,7 @@ func creatBucket(m *minio.Client, bucketName string) {
 	}
 }
 
+// 上传文件
 func (m *Minio) UploadFile(userID int64, filetype, filePath string) (string, error) {
 	log.Println("Minio的上传文件函数")
 	var fileName strings.Builder //string不可变，引入builder能够高效地构建和修改字符串
