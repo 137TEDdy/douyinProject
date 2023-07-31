@@ -37,6 +37,7 @@ type User struct {
 	IsFollow        bool   `json:"is_follow"`
 }
 
+// gorm 将结构体名称转换为复数形式作为表名,这里需要指定表名为users
 func (User) TableName() string {
 	return "users"
 }
