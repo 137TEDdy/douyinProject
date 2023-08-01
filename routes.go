@@ -14,6 +14,10 @@ import "douyinProject/controller"
 func RouteInit(r *gin.Engine) *gin.Engine {
 	baseRouter := r.Group("/douyin") //路由组
 	baseRouter.GET("/feed", controller.Feed)
+	favoriteRouter := baseRouter.Group("/favorite")
+	{
+		favoriteRouter.POST("/action/", middleware.TokenMiddleware(), controller.FavoriteLike)
+	}
 	publishRouter := baseRouter.Group("/publish")
 	{
 		publishRouter.POST("/action/", middleware.TokenMiddleware(), controller.Publish)
