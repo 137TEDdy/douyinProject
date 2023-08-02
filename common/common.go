@@ -24,3 +24,13 @@ type UserResponse struct {
 	Response
 	User model.User `json:"user"`
 }
+
+type CommentResponse struct {
+	Response
+	Comment model.Comment `json:"comment"`
+}
+
+type CommentListResponse struct {
+	Response
+	Comments []*model.Comment `json:"comment_list"`
+}

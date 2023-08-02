@@ -23,7 +23,7 @@ func TokenMiddleware() gin.HandlerFunc {
 			//log.Println("从query里获取token")
 			tokenString = ctx.Query("token")
 		}
-		//log.Println("请求token： ", tokenString)
+		log.Println("请求token： ", tokenString)
 
 		if tokenString == "" { // !strings.HasPrefix(tokenString, "Bearer "
 			log.Println("权限不足")
