@@ -38,7 +38,7 @@ var DB *gorm.DB
 
 func DBInit() {
 	DB = Connection()
-	err := DB.AutoMigrate(&User{}, &Video{}, &Favorite{}, &Relation{}, &Comment{})
+	err := DB.AutoMigrate(&User{}, &Video{}, &Favorite{}, &Relation{}, &Comment{}, &Message{})
 	if err != nil {
 		return
 	} //,

@@ -38,8 +38,8 @@ func RouteInit(r *gin.Engine) *gin.Engine {
 	}
 	messageRouter := baseRouter.Group("/message")
 	{
-		messageRouter.POST("/action", middleware.TokenMiddleware(), controller.ChatAction)
-		messageRouter.POST("/", middleware.TokenMiddleware(), controller.GetChatList)
+		messageRouter.POST("/action/", middleware.TokenMiddleware(), controller.ChatAction)
+		messageRouter.GET("/chat/", middleware.TokenMiddleware(), controller.GetChatList)
 	}
 	return r
 }

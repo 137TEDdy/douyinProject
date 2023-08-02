@@ -1,8 +1,8 @@
 minio:
-  Host: 192.168.1.11   #主机ip（通过WLAN）
+  Host: 192.168.101.11   #主机ip（通过WLAN）
   Port: 9000        #注意，不是9090
-  AccessKeyID: minioted   #id
-  SecretAccessKey: minioted  #密码
+  AccessKeyID: minioadmin   #id
+  SecretAccessKey: minioadmin  #密码
   Videobuckets: tiktokvideos    #名字不能有大写
   Imagebuckets: tiktokimages
   VideoBasePath: D:\1      #本地文件的目录，文件存在这个地方；上传时直接拼接文件名即可
@@ -15,3 +15,8 @@ mysql:
   Username: root
   Password: root
 
+redis:
+  network: "tcp",
+  addr: "127.0.0.1",
+  port: "6379",
+  prefix: ""

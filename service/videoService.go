@@ -57,7 +57,7 @@ func GetImage(videoPath string) string {
 	outputPath := filepath.Join(imageBasePath, lastName) // D:\2\xxx.jpg
 	log.Println("VideoPath: ", videoPath, "   ouputPath: ", outputPath)
 	// 指定FFmpeg命令和参数，截取1s处图片
-	cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "1", "-f", "image2", "-t", "0.01", "-y", outputPath)
+	cmd := exec.Command("D:\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg", "-i", videoPath, "-ss", "1", "-f", "image2", "-t", "0.01", "-y", outputPath)
 	//cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "00:00:01", "-vframes", "1", "-y", outputPath) 这个无法执行
 
 	// 执行FFmpeg命令
