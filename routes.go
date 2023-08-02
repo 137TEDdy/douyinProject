@@ -17,6 +17,7 @@ func RouteInit(r *gin.Engine) *gin.Engine {
 	favoriteRouter := baseRouter.Group("/favorite")
 	{
 		favoriteRouter.POST("/action/", middleware.TokenMiddleware(), controller.FavoriteLike)
+		favoriteRouter.GET("/list/", middleware.TokenMiddleware(), controller.FavoriteList)
 	}
 	publishRouter := baseRouter.Group("/publish")
 	{

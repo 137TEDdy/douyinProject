@@ -16,13 +16,20 @@ import (
 )
 import . "douyinProject/model"
 
-func GetVideoList() ([]*Video, error) {
-	videoList, err := repo.GetVideoList()
+func GetVideoList(user_id int64) ([]*Video, error) {
+	var videoList []*Video
+	var err error
+	if user_id != 0 { //如果用户已经登录
+		videoList, err = repo.GetVideoListLogin(user_id)
+	} else { //用户未登录时
+		videoList, err = repo.GetVideoListUnLogin()
+	}
+
 	return videoList, err
 }
 
 // 根据用户id查出用户，以及对应的视频
-func GetVideoListByUserId(userId int) ([]*Video, error) {
+func GetVideoListByUserId(userId int64) ([]*Video, error) {
 	videolist, err := repo.GetVideoListByUserID(userId)
 	return videolist, err
 }

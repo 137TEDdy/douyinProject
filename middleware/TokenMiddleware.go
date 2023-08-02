@@ -16,10 +16,6 @@ import (
 // 请求用户信息时的中间件：判断token是否存在
 func TokenMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//调试
-		//log.Println(ctx.ContentType())
-		//log.Println("form参数: ", ctx.Request.PostForm)
-
 		//处理两种传入token的情况,更具广泛性
 		var tokenString string
 		tokenString = ctx.PostForm("token")
@@ -55,6 +51,7 @@ func TokenMiddleware() gin.HandlerFunc {
 
 		//此时token通过验证, 我们可以获取claims中的UserID
 		userId := claims.UserId
+		//log.Println("token里的用户id：", userId)
 		//根据id获取user
 		user, _ := service.GetUserById(userId)
 		// 验证用户是否存在

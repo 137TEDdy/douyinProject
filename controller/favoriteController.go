@@ -46,3 +46,29 @@ func FavoriteLike(c *gin.Context) {
 	c.JSON(200, common.Response{0, "操作成功"})
 
 }
+
+// 点赞列表
+func FavoriteList(c *gin.Context) {
+	user_id := c.Query("user_id")
+	//在favorite表里查询该用户的记录，查询出所有video_id, 依次封装到video切片里，并封装用户信息；然后返回该切片
+	userId, err := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(500, common.Response{-1, "数字转换出错"})
+		return
+	}
+	//根据userid查询视频列表
+	videoList, err := service.FavoriteList(userId)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(500, common.Response{-1, "查询视频列表出错"})
+		return
+	}
+
+	//响应数据
+	c.JSON(200, VideosDto{
+		Response:  common.Response{0, "获取点赞列表成功"},
+		VideoList: videoList,
+	})
+
+}

@@ -39,8 +39,20 @@ type VideosDto struct {
 
 func Feed(c *gin.Context) {
 	//time := c.Query("latest_time")
-	//token:=c.Query("token")
-	videoList, err := service.GetVideoList() //调用service业务方法
+	//判断用户是否登陆状态, 是则user_id不为0
+	var user User //当前登录的用户
+	var videoList []*Video
+	var err error
+	userTmp, _ := c.Get("user")
+	//根据用户是否登录来分段处理
+	//未登录，这里不是“”，而是nil
+	if userTmp == nil {
+		videoList, err = service.GetVideoList(0) //调用service业务方法
+	} else { //已经登录
+		user = userTmp.(User)
+		videoList, err = service.GetVideoList(user.Id) //调用service业务方法
+	}
+
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(500,
@@ -110,6 +122,7 @@ func Publish(c *gin.Context) {
 }
 
 // 请求： GET，/douyin/publish/list/
+// 获取该用户的所有投稿视频
 func GetUserVideoList(c *gin.Context) {
 	token := c.Query("token")
 	user_id := c.Query("user_id")
@@ -119,7 +132,7 @@ func GetUserVideoList(c *gin.Context) {
 	}
 
 	//查数据库，根据userId查出视频列表
-	id, _ := strconv.Atoi(user_id)
+	id, _ := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	videoList, err := service.GetVideoListByUserId(id)
 	if err != nil {
 		log.Println(err.Error())
