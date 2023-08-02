@@ -13,5 +13,5 @@ mysql:
   Port: 3306
   DataBase: douyin
   Username: root
-  Password: gjh1375809659
+  Password: root
 
