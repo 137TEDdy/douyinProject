@@ -46,14 +46,13 @@ func Register(c *gin.Context) {
 
 	user, err := service.GetUserByName(username)
 	token, err := common.ReleaseToken(user) //获取随机token
-	LastUserId, err := service.GetLastUserId()
+	LastUserId := user.Id
 	//查询最后一位用户的id，用于自增+1作为新用户的id
 	if err != nil {
 		c.JSON(500, common.Response{-1, "获取用户信息或token错误"})
 		log.Println("获取用户信息或token错误")
 		return
 	}
-	LastUserId++
 	//fmt.Println("user：", user)
 	//.返回结果
 	c.JSON(200, common.UserLoginResponse{

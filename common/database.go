@@ -39,7 +39,7 @@ var DB *gorm.DB
 func DBInit() {
 	DB = Connection()
 	DB.AutoMigrate(&User{}, &Video{}, &Favorite{}, &Relation{}, &Comment{}) //,
-	fmt.Println("数据库创建成功")
+	log.Println("数据库创建成功")
 }
 
 func GetDB() *gorm.DB {

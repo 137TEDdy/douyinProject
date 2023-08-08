@@ -23,20 +23,22 @@ func Like(video_id, user_id int64) error {
 
 	var video model.Video
 	var err error
-	err = common.DB.Where("user_id = ? and video_id = ?", user_id, video_id).Find(&favorite).Error
+	err = common.DB.Where("user_id = ? and video_id = ?", user_id, video_id).Take(&favorite).Error
 	//这里由于没查到，肯定有err； 只是不能是ErrRecordNotFound; （这里必须判断nil的情况，不然可能空指针错误）
 	if err != nil && err != gorm.ErrRecordNotFound {
-		log.Println(err.Error())
-		return err
-	}
-	err = common.DB.Where("video_id = ?", video_id).Find(&video).Error
-	if err != nil {
 		log.Println(err.Error())
 		return err
 	}
 	if favorite.Id != 0 {
 		log.Println("已经存在该点赞记录，无法再次点赞")
 		return errors.New("已经存在该点赞记录，无法再次点赞")
+	}
+
+	//查询出当前视频
+	err = common.DB.Where("video_id = ?", video_id).Find(&video).Error
+	if err != nil {
+		log.Println(err.Error())
+		return err
 	}
 
 	//这里可以换成原子操作
@@ -56,7 +58,10 @@ func Like(video_id, user_id int64) error {
 }
 
 func UnLike(video_id, user_id int64) error {
-	var favorite model.Favorite
+	favorite := model.Favorite{
+		VideoId: video_id,
+		UserId:  user_id,
+	}
 	var video model.Video
 	var err error
 	//尝试删除
@@ -67,14 +72,10 @@ func UnLike(video_id, user_id int64) error {
 		return err
 	}
 
-	err = common.DB.Where("video_id = ?", video_id).Find(&video).Error
+	err = common.DB.Where("video_id = ?", video_id).Take(&video).Error
 	if err != nil {
 		log.Println(err.Error())
 		return err
-	}
-	if favorite.Id == 0 {
-		log.Println("不存在该点赞记录，无法取消点赞")
-		return errors.New("不存在该点赞记录，无法取消点赞")
 	}
 
 	video.FavoriteCount = video.FavoriteCount - 1 //点赞加1

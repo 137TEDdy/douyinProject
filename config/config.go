@@ -14,6 +14,7 @@ type Configs struct {
 	Mysql MysqlConfig
 	Minio MinioConfig
 	Path  PathConfig //本地文件base路径的配置
+	Redis RedisConfig
 	Level string
 }
 
@@ -29,6 +30,12 @@ type MysqlConfig struct {
 	Database string
 	Username string
 	Password string
+}
+type RedisConfig struct {
+	Host    string
+	Port    string
+	NetWork string
+	Auth    string
 }
 
 type MinioConfig struct {
@@ -64,6 +71,13 @@ func InitConfig() {
 		Imagebuckets:    viper.GetString("minio.Imagebuckets"),
 	}
 
+	redisConfig := RedisConfig{
+		Host:    viper.GetString("redis.host"),
+		Port:    viper.GetString("redis.port"),
+		NetWork: viper.GetString("redis.network"),
+		Auth:    viper.GetString("redis.auth"),
+	}
+
 	path := PathConfig{
 		VideoBasePath: viper.GetString("minio.VideoBasePath"),
 		ImageBasePath: viper.GetString("minio.ImageBasePath"),
@@ -73,6 +87,7 @@ func InitConfig() {
 		Minio: minioConfig,
 		Path:  path,
 		Mysql: mysql,
+		Redis: redisConfig,
 		Level: viper.GetString("level"),
 	}
 	log.Println("初始化config成功")
