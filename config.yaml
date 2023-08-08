@@ -15,3 +15,9 @@ mysql:
   Username: root
   Password: gjh1375809659
 
+redis:
+  address: 127.0.0.1 #192.168.1.11
+  network: tcp
+  port: 6379
+  auth:     #默认为空，当启用了密码验证（通过配置文件中的 requirepass 参数）时，连接到Redis时需要提供正确的密码
+

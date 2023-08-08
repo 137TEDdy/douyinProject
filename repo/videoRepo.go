@@ -25,10 +25,13 @@ func GetVideoListLogin(user_id int64) ([]*model.Video, error) {
 		if id == 0 { //id不能为0
 			continue
 		}
-		user, err := GetUserById(id)
-		if err != nil { //用户不存在，不结束请求
-			log.Println(err.Error())
-			continue
+
+		user, err := CacheGetUser(id) //先查找缓存
+		if err != nil {               //如果缓存不存在或出错，则从数据库查找
+			user, err = GetUserById(id)
+			if err != nil {
+				log.Println(err.Error())
+			}
 		}
 		item.Author = user
 
@@ -55,10 +58,13 @@ func GetVideoListUnLogin() ([]*model.Video, error) {
 		if id == 0 { //id不能为0
 			continue
 		}
-		user, err := GetUserById(id)
-		if err != nil { //用户不存在，不结束请求
-			log.Println(err.Error())
-			continue
+
+		user, err := CacheGetUser(id) //先查找缓存
+		if err != nil {               //如果缓存不存在或出错，则从数据库查找
+			user, err = GetUserById(id)
+			if err != nil {
+				log.Println(err.Error())
+			}
 		}
 		item.Author = user
 
@@ -74,9 +80,12 @@ func GetVideoListByUserID(userId int64) ([]*model.Video, error) {
 		return videoList, err
 	}
 	//查询用户
-	user, err := GetUserById(userId)
-	if err != nil {
-		log.Println(err.Error())
+	user, err := CacheGetUser(userId) //先查找缓存
+	if err != nil {                   //如果缓存不存在或出错，则从数据库查找
+		user, err = GetUserById(userId)
+		if err != nil {
+			log.Println(err.Error())
+		}
 	}
 
 	for _, item := range videoList {
@@ -119,6 +128,7 @@ func GetVideosByVideoId(video_id, user_id int64) (*model.Video, error) {
 		return nil, err
 	}
 	//查询user相关信息并封装到video里面
+
 	user, err := GetUserById(user_id)
 	if err != nil {
 		log.Println(err.Error())
@@ -131,6 +141,26 @@ func GetVideosByVideoId(video_id, user_id int64) (*model.Video, error) {
 		log.Println(err.Error())
 	}
 	video.IsFavorite = flag
-
 	return video, nil
 }
+
+//// 通过视频的地址来缓存
+//func CacheSetVideo(video model.Video) error {
+//	id := video.Id
+//	strId := strconv.Itoa(int(id))
+//	err := common.CacheSet("video_"+strId, video)
+//
+//	return err
+//}
+//
+//func CacheGetVideo(video_id int64) (model.Video, error) {
+//	key := strconv.FormatInt(video_id, 10)
+//	data, err := common.CacheGet("user_" + key)
+//	var video model.Video
+//	if err != nil {
+//		return video, err
+//	}
+//
+//	err = json.Unmarshal(data, &video)
+//	return video, err
+//}
