@@ -25,7 +25,10 @@ func Connection() *gorm.DB {
 	//数据库连接的 DSN（Data Source Name），其中包含了数据库连接的相关信息
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", username, password, host, port, Dbname, timeout)
 	//连接MYSQL, 获得DB类型实例，用于后面的数据库读写操作。
-	db, err := gorm.Open(mysql.Open(dsn))
+	db, err := gorm.Open(mysql.Open(dsn),
+		&gorm.Config{
+			SkipDefaultTransaction: true,  //关闭默认事务，性能优化
+			PrepareStmt:            true}) //缓存预编译语句，提高35%左右性能
 	if err != nil {
 		panic("连接数据库失败, error=" + err.Error())
 	}

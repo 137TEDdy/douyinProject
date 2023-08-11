@@ -11,7 +11,7 @@ type Comment struct {
 	User    User   `json:"user" gorm:"foreignkey:UserId"`
 	VideoId int64  `json:"-"`
 	Content string `json:"content"` //内容
-	Time    string `json:"create_data"`
+	Time    string `json:"create_date"`
 }
 
 func (Comment) TableName() string {

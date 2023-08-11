@@ -43,12 +43,40 @@ func PublishComment(user_id, video_id int64, content, time string) (model.Commen
 
 }
 
-func DeleteComment(comment_id int64) error {
+func GetCommentByID(comment_id int64) (model.Comment, error) {
+	//先查出该comment
 	var comment model.Comment
+	if err := common.DB.Take(&comment, comment_id).Error; err != nil {
+		log.Println(err.Error())
+		return comment, err
+	}
+	user, err := GetUserById(comment.UserId)
+	if err != nil {
+		return comment, err
+	}
+	comment.User = user
+	return comment, nil
+}
+
+func DeleteComment(comment_id int64) error {
+
+	//先查询comment
+	comment, err := GetCommentByID(comment_id)
+	//如果缓存存在则删除它
+	if comment.Id != 0 {
+		err = CacheDelComment(comment.VideoId, comment)
+		if err != nil {
+			log.Println("缓存删除失败")
+			return err
+		}
+		log.Println("缓存删除成功")
+	}
+
 	if err := common.DB.Where("comment_id=?", comment_id).Delete(&comment).Error; err != nil {
 		log.Println(err.Error())
 		return err
 	}
+
 	return nil //删除成功
 }
 
@@ -61,6 +89,7 @@ func GetCommentList(video_id int64) ([]*model.Comment, error) {
 		log.Println("comment缓存获取成功")
 		for _, val := range list {
 			commentList = append(commentList, val)
+			log.Println("缓存里的comment值为：", *val)
 		}
 		return commentList, nil
 	}
@@ -116,6 +145,19 @@ func CacheSetComment(video_id int64, comment model.Comment) error {
 	videoId := strconv.FormatInt(video_id, 10)
 	//以lpush的方式插入数据
 	err := common.CacheLPush("comment_"+videoId, comment)
+	return err
+}
 
+func CacheDelComment(video_id int64, comment model.Comment) error {
+	videoId := strconv.FormatInt(video_id, 10)
+	//以lrem删除数据
+	// 将对象序列化为字符串
+	data, err := json.Marshal(comment)
+	if err != nil {
+		log.Println("序列化失败:", err)
+		return err
+	}
+	jsonString := string(data)
+	err = common.CacheLRem("comment_"+videoId, jsonString)
 	return err
 }

@@ -13,6 +13,8 @@ import (
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/redigo"
 	"log"
+	"strconv"
+
 	//"github.com/garyburd/redigo/redis"    //另一种redis客户端，由不同团队开发的
 	"github.com/gomodule/redigo/redis"
 	"time"
@@ -109,32 +111,72 @@ func CacheGet(key string) ([]byte, error) {
 	return obj, nil
 }
 
+//	func CacheHSet(key, mkey, value string) error {
+//		conn := redisClient.Get()
+//		defer conn.Close()
+//		//data, err := json.Marshal(value) //序列化成二进制存储
+//		_, err := conn.Do("hset", key, mkey, value)
+//
+//		//for _, val := range value { //第二个参数才是value，第一个是index
+//		//
+//		//	if err != nil {
+//		//		return err
+//		//	}
+//		//
+//		//	if err != nil {
+//		//		return err
+//		//	}
+//		//}
+//		return err
+//	}
 func CacheHSet(key, mkey string, value ...interface{}) error {
 	conn := redisClient.Get()
 	defer conn.Close()
-	for _, val := range value { //第二个参数才是value，第一个是index
-		data, err := json.Marshal(val) //序列化成二进制存储
+
+	for i, d := range value {
+		data, err := json.Marshal(d)
 		if err != nil {
-			return err
+			return nil
 		}
-		_, err = conn.Do("hset", key, mkey, data)
+
+		_, err = conn.Do("HSET", key, mkey+"_"+strconv.Itoa(i), data)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
 }
-
 func CacheHGet(key, mkey string) ([]byte, error) {
 	conn := redisClient.Get()
 	defer conn.Close()
-	bytes, err := redis.Bytes(conn.Do("hget", key, mkey))
+
+	data, err := redis.Bytes(conn.Do("HGET", key, mkey))
+
+	//fmt.Printf("data:%v", data)
 	if err != nil {
-		return bytes, err
-	} else if len(bytes) == 0 {
-		return bytes, ErrMissCache
+		return []byte{}, err
 	}
-	return bytes, nil
+	if len(data) == 0 {
+		return []byte{}, ErrMissCache
+	}
+	return data, nil
+}
+
+func CacheHGetAll(key string) (map[string]string, error) {
+	conn := redisClient.Get()
+	defer conn.Close()
+	result, err := redis.Values(conn.Do("hgetall", key)) //转成byte切片的切片
+	fmt.Printf("result的类型为:%T", result)
+	var mp map[string]string
+	for i := 0; i < len(result); i += 2 {
+		mp[result[i].(string)] = result[i+1].(string)
+	}
+	log.Println("获取的map为：", mp)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	return mp, nil
 }
 
 func CacheLPush(key string, data ...interface{}) error {
@@ -160,5 +202,11 @@ func CacheLGetAll(key string) ([][]byte, error) {
 		return [][]byte{}, err
 	}
 	return data, nil
+}
 
+func CacheLRem(key string, data any) error {
+	conn := redisClient.Get()
+	defer conn.Close()
+	_, err := conn.Do("LREM", key, "0", data)
+	return err
 }

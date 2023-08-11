@@ -21,13 +21,8 @@ func main() {
 	RouteInit(r)
 	Init()
 	r.Run(":9093")
-
-	//log.Println(common.Exists("name"))
-	//common.CacheSet("user", "tedd")
-	//config.InitConfig() //初始化配置
-	//common.RedisInit()
-	//nums := []int{1, 2, 3, 8, 9}
-	//common.CacheHSet("comment", "1", nums)
-
-	//common.CacheHGet("comment", "1")
+	//common.CacheHSet("comment_1", "2", "xxx")
+	//common.CacheHSet("comment_1", "3", "aaa")
+	//comment, _ := repo.CacheGetComment(1)
+	//log.Println(comment)
 }
