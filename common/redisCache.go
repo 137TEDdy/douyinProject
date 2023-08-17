@@ -7,12 +7,12 @@ package common
 
 import (
 	"douyinProject/config"
+	"douyinProject/log"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/redigo"
-	"log"
 	"strconv"
 
 	//"github.com/garyburd/redigo/redis"    //另一种redis客户端，由不同团队开发的
@@ -57,7 +57,7 @@ func RedisInit() {
 				redis.DialDatabase(0), //连接哪个数据库
 			)
 			if err != nil {
-				log.Println("redis连接失败,", err)
+				log.Info("redis连接失败,", err)
 				return nil, err
 			}
 			return c, err
@@ -67,7 +67,7 @@ func RedisInit() {
 	sync := redigo.NewPool(redisClient) //创建了一个 Redis 连接池，并将其与 redisClient 关联起来
 	rsy = redsync.New(sync)             //创建了一个分布式锁、管理器，使用之前创建的 Redis 连接池 sync
 	//log.Println(redisClient.Dial == nil)
-	log.Println("redis连接成功")
+	log.Info("redis连接成功")
 
 }
 
@@ -171,9 +171,9 @@ func CacheHGetAll(key string) (map[string]string, error) {
 	for i := 0; i < len(result); i += 2 {
 		mp[result[i].(string)] = result[i+1].(string)
 	}
-	log.Println("获取的map为：", mp)
+	log.Info("获取的map为：", mp)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return nil, err
 	}
 	return mp, nil
@@ -186,7 +186,7 @@ func CacheLPush(key string, data ...interface{}) error {
 		value, _ := json.Marshal(binaryTmp)
 		_, err := conn.Do("lpush", key, value)
 		if err != nil {
-			log.Println("lpush出错,", err.Error())
+			log.Error("lpush出错,", err.Error())
 			return err
 		}
 	}
@@ -198,7 +198,7 @@ func CacheLGetAll(key string) ([][]byte, error) {
 	defer conn.Close()
 	data, err := redis.ByteSlices(conn.Do("lrange", key, "0", "-1")) //转成byte切片的切片
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return [][]byte{}, err
 	}
 	return data, nil
@@ -209,4 +209,19 @@ func CacheLRem(key string, data any) error {
 	defer conn.Close()
 	_, err := conn.Do("LREM", key, "0", data)
 	return err
+}
+
+func GetLock(key string) (*redsync.Mutex, error) {
+	mutex := rsy.NewMutex(key+"_lock", option...)
+	if err := mutex.Lock(); err != nil {
+		return mutex, err
+	}
+	return mutex, nil
+}
+
+func UnLock(mutex *redsync.Mutex) error {
+	if _, err := mutex.Unlock(); err != nil {
+		return err
+	}
+	return nil
 }

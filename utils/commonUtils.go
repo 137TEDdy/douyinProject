@@ -18,3 +18,8 @@ func GetCurrentTimeMMDD() string {
 	timeStr := curtime.Format("01-02") //格式化字符串，其中01表示月份，02表示日期
 	return timeStr
 }
+
+func GetCurrentTimeForString() string {
+	currentTime := time.Now()
+	return currentTime.Format("200601021504")
+}

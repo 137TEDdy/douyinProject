@@ -5,7 +5,9 @@
 
 package common
 
-import "douyinProject/model"
+import (
+	"douyinProject/model"
+)
 
 type Response struct {
 	StatusCode int32  `json:"status_code"`

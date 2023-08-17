@@ -7,8 +7,8 @@ package repo
 
 import (
 	"douyinProject/common"
+	"douyinProject/log"
 	"encoding/json"
-	"log"
 	"strconv"
 )
 import "douyinProject/model"
@@ -28,11 +28,11 @@ func GetUserById(userId int64) (model.User, error) {
 	//var user model.User
 	user, err := CacheGetUser(userId)
 	if err == nil {
-		log.Println("从缓存获取user成功")
+		log.Info("从缓存获取user成功")
 		return user, nil
 	}
 	if err := common.DB.First(&user, userId).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return user, err
 	}
 	//开启协程，进行缓存
@@ -43,7 +43,7 @@ func GetUserById(userId int64) (model.User, error) {
 func GetUserByName(username string) (model.User, error) {
 	var user model.User
 	if err := common.DB.Where("user_name=?", username).First(&user).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return user, err
 	}
 	//开启协程，进行缓存
@@ -56,7 +56,7 @@ func GetUserByName(username string) (model.User, error) {
 func GetLastUserId() (int64, error) {
 	var user model.User
 	if err := common.DB.Last(&user).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return 0, err
 	}
 	return user.Id, nil
@@ -69,7 +69,7 @@ func CreateUser(username, hasedPassword string) error {
 		Password: hasedPassword,
 	}
 	if err := common.DB.Create(&user).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	//开启协程，进行缓存
@@ -83,7 +83,7 @@ func CacheSetUser(user model.User) {
 	strId := strconv.Itoa(int(id))              //先把int64转成int,再转成字符串
 	err := common.CacheSet("user_"+strId, user) //会先序列化再cache
 	if err != nil {
-		log.Println("缓存失败，", err.Error())
+		log.Error("缓存失败，", err.Error())
 	}
 }
 

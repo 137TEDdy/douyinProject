@@ -6,9 +6,9 @@
 package service
 
 import (
+	"douyinProject/log"
 	"douyinProject/model"
 	"douyinProject/repo"
-	"log"
 )
 
 func FavoriteLike(video_id, user_id int64, action_type int) error {
@@ -38,7 +38,7 @@ func FavoriteList(user_id int64) ([]*model.Video, error) {
 		video_id := val.VideoId
 		video, err := repo.GetVideosByVideoId(video_id, user_id) //获取
 		if err != nil {                                          //出错则不添加这条视频信息
-			log.Println(err.Error())
+			log.Error(err.Error())
 			continue
 		}
 		videoList = append(videoList, video)

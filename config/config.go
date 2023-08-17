@@ -23,6 +23,7 @@ var Config Configs
 type PathConfig struct {
 	VideoBasePath string
 	ImageBasePath string
+	LogFile       string
 }
 type MysqlConfig struct {
 	Host     string
@@ -81,6 +82,7 @@ func InitConfig() {
 	path := PathConfig{
 		VideoBasePath: viper.GetString("minio.VideoBasePath"),
 		ImageBasePath: viper.GetString("minio.ImageBasePath"),
+		LogFile:       viper.GetString("logfile"),
 	}
 
 	Config = Configs{

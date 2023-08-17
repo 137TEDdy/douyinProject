@@ -7,10 +7,10 @@ package minioHandler
 
 import (
 	"douyinProject/config"
+	"douyinProject/log"
 	"douyinProject/utils"
 	"github.com/minio/minio-go/v6"
 	"github.com/sirupsen/logrus"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -45,10 +45,9 @@ func InitMinio() {
 	useSSL := false
 
 	// 初使化 minio client对象， 创建一个客户端
-	log.Println("链接地址：", endpoint)
 	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
 	if err != nil {
-		logrus.Error("创建minio客户端错误: ", err)
+		log.Error("创建minio客户端错误: " + err.Error())
 	}
 	//创建存储桶
 	creatBucket(minioClient, imagesBucket)
@@ -65,9 +64,9 @@ func creatBucket(m *minio.Client, bucketName string) {
 	}
 	if !isExist {
 		m.MakeBucket(bucketName, "us-east-1") //不存在就创建，us-east-1为地区、
-		log.Println(bucketName, "桶不存在，初始化")
+		log.Info(bucketName + "桶不存在，初始化")
 	}
-	log.Println(bucketName, "桶已存在")
+	log.Info(bucketName + " 桶已存在")
 	//设置桶策略，允许任何AWS账号执行 s3:GetObject 操作， 授予公共读取权限
 	policy := `{"Version": "2012-10-17",
 				"Statement": 
@@ -81,13 +80,13 @@ func creatBucket(m *minio.Client, bucketName string) {
 				}`
 	err = m.SetBucketPolicy(bucketName, policy) //设置桶权限
 	if err != nil {
-		logrus.Errorf("SetBucketPolicy %s  err:%s", bucketName, err.Error())
+		log.Errorf("SetBucketPolicy %s  err:%s", bucketName, err.Error())
 	}
 }
 
 // 上传文件
 func (m *Minio) UploadFile(userID int64, filetype, filePath string) (string, error) {
-	log.Println("Minio的上传文件函数")
+	log.Info("Minio开始上传文件")
 	var fileName strings.Builder //string不可变，引入builder能够高效地构建和修改字符串
 	var contentType, suffix, bucketName string
 
@@ -106,18 +105,18 @@ func (m *Minio) UploadFile(userID int64, filetype, filePath string) (string, err
 	fileName.WriteString("_")
 	fileName.WriteString(strconv.FormatInt(utils.GetCurrentTime(), 10)) //int转换成字符串，十进制表示
 	fileName.WriteString(suffix)
-	log.Println("filename： ", fileName.String())
-	log.Println("bucketname： ", bucketName)
-	log.Println("文件路径filepath： ", filePath)
+	log.Info("filename： ", fileName.String())
+	log.Info("bucketname： ", bucketName)
+	log.Info("文件路径filepath： ", filePath)
 
 	n, err := m.MinioClient.FPutObject(bucketName, fileName.String(), filePath, minio.PutObjectOptions{
 		ContentType: contentType,
 	})
 	if err != nil {
-		log.Println("更新文件错误:%s", err.Error())
+		log.Error("更新文件错误:%s", err.Error())
 		return "", err
 	}
-	log.Println("更新 %dbyte大小的文件成功，文件名:%s", n, fileName)
+	log.Info("更新 %dbyte大小的文件成功，文件名:%s", n, fileName)
 
 	url := "http://" + m.endpoint + "/" + bucketName + "/" + fileName.String()
 	return url, nil

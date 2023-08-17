@@ -7,9 +7,9 @@ package service
 
 import (
 	"douyinProject/config"
+	"douyinProject/log"
 	"douyinProject/repo"
 	"douyinProject/utils"
-	"log"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -43,6 +43,27 @@ func StoreVideo(user User, title, videoUrl, coverUrl string) error {
 		CoverUrl:    coverUrl,
 		PublishTime: utils.GetCurrentTime(),
 	}
+
+	//common.SendMessage(videoUrl, video)
+	//common.ConsumeMessages(videoUrl, func(message []byte) error {
+	//	var data Video
+	//	json.Unmarshal(message, &data)
+	//	err := repo.StoreVideo(data)
+	//	return err
+	//}, func(err error) {
+	//	log.Printf("Error occurred: %v", err)
+	//})
+	// 创建一个带有缓冲的通道，缓冲区大小为1
+	//errChan := make(chan error, 1)
+	//go func() {
+	//	if err := repo.StoreVideo(video); err != nil {
+	//		errChan <- err
+	//	}
+	//}()
+	//if err := <-errChan; err != nil {
+	//	return err
+	//}
+
 	err := repo.StoreVideo(video)
 	return err
 }
@@ -55,7 +76,7 @@ func GetImage(videoPath string) string {
 	lastName = lastName[:len(lastName)-4] + ".jpg" //获取  xxx.mp4里的xxx，变成xxx.jpg
 
 	outputPath := filepath.Join(imageBasePath, lastName) // D:\2\xxx.jpg
-	log.Println("VideoPath: ", videoPath, "   ouputPath: ", outputPath)
+	log.Info("VideoPath: ", videoPath, "   ouputPath: ", outputPath)
 	// 指定FFmpeg命令和参数，截取1s处图片
 	cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "1", "-f", "image2", "-t", "0.01", "-y", outputPath)
 	//cmd := exec.Command("D:\\APP2\\ffmpeg-5.1.2-essentials_build\\bin\\ffmpeg", "-i", videoPath, "-ss", "00:00:01", "-vframes", "1", "-y", outputPath) 这个无法执行
@@ -63,8 +84,8 @@ func GetImage(videoPath string) string {
 	// 执行FFmpeg命令
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal("ffmpeg出现错误:", err)
+		log.Fatal("ffmpeg出现错误:", err.Error())
 	}
-	log.Println("视频截图已保存到", outputPath)
+	log.Info("视频截图已保存到", outputPath)
 	return outputPath
 }

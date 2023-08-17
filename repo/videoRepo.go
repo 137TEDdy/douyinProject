@@ -7,9 +7,9 @@ package repo
 
 import (
 	"douyinProject/common"
+	"douyinProject/log"
 	"douyinProject/model"
 	"fmt"
-	"log"
 )
 
 // 用户登录状态下，获取视频列表
@@ -17,7 +17,7 @@ func GetVideoListLogin(user_id int64) ([]*model.Video, error) {
 
 	var videoList []*model.Video
 	if err := common.DB.Find(&videoList).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return videoList, err
 	}
 	for _, item := range videoList {
@@ -30,7 +30,7 @@ func GetVideoListLogin(user_id int64) ([]*model.Video, error) {
 		if err != nil {               //如果缓存不存在或出错，则从数据库查找
 			user, err = GetUserById(id)
 			if err != nil {
-				log.Println(err.Error())
+				log.Error(err.Error())
 			}
 		}
 		item.Author = user
@@ -38,7 +38,7 @@ func GetVideoListLogin(user_id int64) ([]*model.Video, error) {
 		//判断当前用户有没有点赞，并填充is_favorite字段
 		flag, err := IsFavoriteExist(user_id, item.Id)
 		if err != nil {
-			log.Println(err.Error())
+			log.Error(err.Error())
 		}
 		item.IsFavorite = flag
 	}
@@ -50,7 +50,7 @@ func GetVideoListUnLogin() ([]*model.Video, error) {
 
 	var videoList []*model.Video
 	if err := common.DB.Find(&videoList).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return videoList, err
 	}
 	for _, item := range videoList {
@@ -63,7 +63,7 @@ func GetVideoListUnLogin() ([]*model.Video, error) {
 		if err != nil {               //如果缓存不存在或出错，则从数据库查找
 			user, err = GetUserById(id)
 			if err != nil {
-				log.Println(err.Error())
+				log.Error(err.Error())
 			}
 		}
 		item.Author = user
@@ -76,7 +76,7 @@ func GetVideoListUnLogin() ([]*model.Video, error) {
 func GetVideoListByUserID(userId int64) ([]*model.Video, error) {
 	var videoList []*model.Video
 	if err := common.DB.Where("author_id=?", userId).Find(&videoList).Error; err != nil { //不要忘加&
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return videoList, err
 	}
 	//查询用户
@@ -84,7 +84,7 @@ func GetVideoListByUserID(userId int64) ([]*model.Video, error) {
 	if err != nil {                   //如果缓存不存在或出错，则从数据库查找
 		user, err = GetUserById(userId)
 		if err != nil {
-			log.Println(err.Error())
+			log.Error(err.Error())
 		}
 	}
 
@@ -100,7 +100,7 @@ func GetVideoListByUserID(userId int64) ([]*model.Video, error) {
 		//判断当前用户有没有点赞，并填充is_favorite字段
 		flag, err := IsFavoriteExist(user.Id, item.Id)
 		if err != nil {
-			log.Println(err.Error())
+			log.Error(err.Error())
 		}
 		item.IsFavorite = flag
 	}
@@ -112,7 +112,7 @@ func StoreVideo(video model.Video) error {
 	//video.IsFavorite = false
 
 	if err := common.DB.Create(&video).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	return nil
@@ -124,21 +124,21 @@ func StoreVideo(video model.Video) error {
 func GetVideosByVideoId(video_id, user_id int64) (*model.Video, error) {
 	var video *model.Video
 	if err := common.DB.Find(&video, video_id).Error; err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		return nil, err
 	}
 	//查询user相关信息并封装到video里面
 
 	user, err := GetUserById(user_id)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 	}
 	video.Author = user
 
 	//判断当前用户有没有点赞，并填充is_favorite字段
 	flag, err := IsFavoriteExist(user_id, video_id)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 	}
 	video.IsFavorite = flag
 	return video, nil

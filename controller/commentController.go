@@ -7,11 +7,11 @@ package controller
 
 import (
 	"douyinProject/common"
+	"douyinProject/log"
 	"douyinProject/model"
 	"douyinProject/service"
 	"douyinProject/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"strconv"
 )
 
@@ -29,9 +29,8 @@ func CommentAction(c *gin.Context) {
 		//发表评论：视频id，用户id，评论内容；插入comment表里； 并返回评论内容
 		comment_text = c.Query("comment_text")
 		comment, err := service.PublishComment(user.Id, videoid, comment_text, utils.GetCurrentTimeMMDD())
-		log.Println(comment)
 		if err != nil {
-			log.Println(err.Error())
+			log.Error(err.Error())
 			c.JSON(500, common.Response{-1, "发表评论失败"})
 			return
 		}
@@ -48,7 +47,7 @@ func CommentAction(c *gin.Context) {
 		//调用service，删除评论
 		err = service.DeleteComment(commentId)
 		if err != nil {
-			log.Println(err.Error())
+			log.Error(err.Error())
 			c.JSON(500, common.Response{-1, "删除评论出错"})
 			return
 		}
@@ -62,14 +61,14 @@ func GetCommentList(c *gin.Context) {
 	video_id := c.Query("video_id")
 	videoId, err := strconv.ParseInt(video_id, 10, 64)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		c.JSON(500, common.Response{-1, "数字失败"})
 		return
 	}
 
 	commentList, err := service.GetCommentList(videoId)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err.Error())
 		c.JSON(500, common.Response{-1, "获取评论列表失败"})
 		return
 	}

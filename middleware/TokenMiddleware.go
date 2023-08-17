@@ -7,9 +7,9 @@ package middleware
 
 import (
 	"douyinProject/common"
+	"douyinProject/log"
 	"douyinProject/service"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -23,10 +23,9 @@ func TokenMiddleware() gin.HandlerFunc {
 			//log.Println("从query里获取token")
 			tokenString = ctx.Query("token")
 		}
-		log.Println("请求token： ", tokenString)
 
 		if tokenString == "" { // !strings.HasPrefix(tokenString, "Bearer "
-			log.Println("权限不足")
+			log.Error("权限不足")
 			ctx.JSON(http.StatusUnauthorized, common.Response{
 				-1,
 				"权限不足",
@@ -40,7 +39,7 @@ func TokenMiddleware() gin.HandlerFunc {
 
 		//如果解析失败，或者解析后token无效，则失败
 		if err != nil || !token.Valid {
-			log.Println("权限不足")
+			log.Error("权限不足")
 			ctx.JSON(http.StatusUnauthorized, common.Response{
 				-1,
 				"权限不足",
@@ -56,7 +55,7 @@ func TokenMiddleware() gin.HandlerFunc {
 		user, _ := service.GetUserById(userId)
 		// 验证用户是否存在
 		if user.Id == 0 {
-			log.Println("权限不足")
+			log.Error("权限不足")
 			ctx.JSON(http.StatusUnauthorized, common.Response{
 				-1,
 				"权限不足",
@@ -65,6 +64,7 @@ func TokenMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		log.Info("获取用户token成功")
 		//用户存在 将user信息写入上下文,并放行
 		ctx.Set("user", user)
 		ctx.Next()
