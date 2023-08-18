@@ -46,19 +46,19 @@ func FollowOrUnFollowAction(follow_id, follower_id int64, isFollow bool) error{
 	UpdateUser(follower_id, op, "followers_count")
 
 	go CacheChangeUserCount(follow_id, op, "follow")
-	go CacheChangeUserCount(followed_id, op, "followed")
+	go CacheChangeUserCount(follower_id, op, "followed")
 	return nil
 }
 
 // 关注
 func Follow(follow_id, follower_id int64) error {
 	
-	return FollowOrUnFollowAction(follow_id, follower_id, 1);
+	return FollowOrUnFollowAction(follow_id, follower_id, true);
 }
 
 // 取消关注
 func UnFollow(follow_id, follower_id int64) error {
-	return FollowOrUnFollowAction(follow_id, follower_id, 0);
+	return FollowOrUnFollowAction(follow_id, follower_id, false);
 }
 
 // 查询某用户的在favorite表里所有记录 查看我的关注
