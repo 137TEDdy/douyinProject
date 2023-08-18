@@ -114,7 +114,6 @@ func StoreVideo(video model.Video) error {
 		return err
 	}
 	//更新用户的作品数
-	log.Info("作品数+1")
 	UpdateUser(video.Author.Id, 1, "work_count")
 
 	return nil
