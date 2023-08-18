@@ -8,10 +8,10 @@ package repo
 import (
 	"douyinProject/common"
 	"douyinProject/log"
+	"douyinProject/model"
 	"encoding/json"
 	"strconv"
 )
-import "douyinProject/model"
 
 //func IsUsernameExsit(username string) bool {
 //	var user model.User
@@ -34,6 +34,10 @@ func UpdateUser(userId, num int64, stype string) {
 		common.DB.Model(&user).Update("total_favorited", user.TotalFav+num)
 	case "work_count":
 		common.DB.Model(&user).Update("work_count", user.WorkCount+num)
+	case "following_count":
+		common.DB.Model(&user).Update("following_count", user.FollowCount+num)
+	case "followers_count":
+		common.DB.Model(&user).Update("followers_count", user.FollowerCount+num)
 	}
 }
 
