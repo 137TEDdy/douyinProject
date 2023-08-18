@@ -23,8 +23,8 @@ package model
 
 type User struct {
 	// gorm.Model
-	Id              int64  `json:"id" gorm:"column:user_id; primaryKey"`
-	Name            string `json:"name" gorm:"column:user_name"`
+	Id              int64  `json:"id" gorm:"column:user_id; primary_key"`
+	Name            string `json:"name" gorm:"column:user_name;index:name"`
 	Password        string `json:"-"` //密码在序列化时忽略
 	FollowCount     int64  `json:"follow_count"`
 	FollowerCount   int64  `json:"follower_count"`

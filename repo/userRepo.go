@@ -23,12 +23,26 @@ import "douyinProject/model"
 //	return false
 //}
 
+// 更新的用户，num为更新值
+func UpdateUser(userId, num int64, stype string) {
+
+	user, _ := GetUserById(userId)
+	switch stype {
+	case "favorite_count":
+		common.DB.Model(&user).Update("favorite_count", user.FavCount+num)
+	case "total_favorited":
+		common.DB.Model(&user).Update("total_favorited", user.TotalFav+num)
+	case "work_count":
+		common.DB.Model(&user).Update("work_count", user.WorkCount+num)
+	}
+}
+
 // 返回user对象和bool；兼具判断user是否存在，和获取user
 func GetUserById(userId int64) (model.User, error) {
 	//var user model.User
 	user, err := CacheGetUser(userId)
+	//从缓存获取user成功
 	if err == nil {
-		log.Info("从缓存获取user成功")
 		return user, nil
 	}
 	if err := common.DB.First(&user, userId).Error; err != nil {

@@ -20,7 +20,7 @@ package model
 
 type Video struct {
 	Id       int64 `json:"id" gorm:"column:video_id; primary_key;"`
-	AuthorId int64 `json:"-"`
+	AuthorId int64 `json:"-" gorm:"index"`
 	Author   User  `json:"author" gorm:"foreignkey:AuthorId"`
 
 	PlayUrl       string `json:"play_url" gorm:"column:play_url;" `

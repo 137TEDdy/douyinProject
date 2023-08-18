@@ -61,8 +61,13 @@ func Like(video_id, user_id int64) error {
 		return err
 	}
 
-	//go CacheChangeUserCount(uid, add, "like")
-	//go CacheChangeUserCount(authorid, add, "liked")
+	//更新用户的点赞和被点赞信息
+	UpdateUser(user_id, add1, "favorite_count")
+	authorId, _ := GetAuthorIdByVideoId(video_id)
+	UpdateUser(authorId, add1, "total_favorited")
+
+	go CacheChangeUserCount(user_id, add1, "like")
+	go CacheChangeUserCount(authorId, add1, "liked")
 	return nil
 }
 
@@ -94,6 +99,15 @@ func UnLike(video_id, user_id int64) error {
 		log.Error(err.Error())
 		return err
 	}
+
+	//更新用户的点赞和被点赞信息
+	UpdateUser(user_id, sub1, "favorite_count")
+	authorId, _ := GetAuthorIdByVideoId(video_id)
+	UpdateUser(authorId, sub1, "total_favorited")
+
+	go CacheChangeUserCount(user_id, sub1, "like")
+	go CacheChangeUserCount(authorId, sub1, "liked")
+
 	return nil
 }
 

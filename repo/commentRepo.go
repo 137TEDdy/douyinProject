@@ -30,6 +30,9 @@ func PublishComment(user_id, video_id int64, content, time string) (model.Commen
 		Content: content,
 		Time:    time,
 	}
+	//传入视频id，修改评论数
+	UpdateVideo(video_id, 1, "comment_count")
+
 	//缓存
 	CacheSetComment(video_id, comment)
 
@@ -76,6 +79,8 @@ func DeleteComment(comment_id int64) error {
 		log.Error(err.Error())
 		return err
 	}
+	//传入视频id，修改评论数
+	UpdateVideo(comment.VideoId, -1, "comment_count")
 
 	return nil //删除成功
 }

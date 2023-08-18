@@ -14,6 +14,7 @@ import (
 func FavoriteLike(video_id, user_id int64, action_type int) error {
 	if action_type == 1 {
 		err := repo.Like(video_id, user_id)
+
 		if err != nil {
 			return err
 		}
@@ -36,8 +37,8 @@ func FavoriteList(user_id int64) ([]*model.Video, error) {
 	var videoList []*model.Video
 	for _, val := range favorites {
 		video_id := val.VideoId
-		video, err := repo.GetVideosByVideoId(video_id, user_id) //获取
-		if err != nil {                                          //出错则不添加这条视频信息
+		video, err := repo.GetVideosByVideoId(video_id) //获取
+		if err != nil {                                 //出错则不添加这条视频信息
 			log.Error(err.Error())
 			continue
 		}

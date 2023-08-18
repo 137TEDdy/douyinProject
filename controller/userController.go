@@ -6,14 +6,13 @@
 package controller
 
 import (
-	"douyinProject/common"
+	. "douyinProject/common"
 	"douyinProject/log"
 	. "douyinProject/model"
 	"douyinProject/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 /*
@@ -29,14 +28,14 @@ func Register(c *gin.Context) {
 	//token := username + password
 	//2.验证： 判断username是否存在,  存在err说明没有这个用户名
 	if _, err := service.GetUserByName(username); err == nil {
-		c.JSON(422, common.Response{-1, "用户已经存在"})
+		c.JSON(CodeUserExist, Response{-1, Msg(CodeUserExist)})
 		log.Error("用户已经存在")
 		return
 	}
 	//对密码进行加密
 	hasedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(500, common.Response{-1, "加密错误"})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		log.Error("加密错误")
 		return
 	}
@@ -45,18 +44,18 @@ func Register(c *gin.Context) {
 	service.CreateUser(username, string(hasedPassword))
 
 	user, err := service.GetUserByName(username)
-	token, err := common.ReleaseToken(user) //获取随机token
+	token, err := ReleaseToken(user) //获取随机token
 	LastUserId := user.Id
 	//查询最后一位用户的id，用于自增+1作为新用户的id
 	if err != nil {
-		c.JSON(500, common.Response{-1, "获取用户信息或token错误"})
+		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		log.Error("获取用户信息或token错误")
 		return
 	}
 	//fmt.Println("user：", user)
 	//.返回结果
-	c.JSON(200, common.UserLoginResponse{
-		common.Response{0, "注册成功"},
+	c.JSON(CodeSuccess, UserLoginResponse{
+		Response{0, Msg(CodeSuccess)},
 		LastUserId,
 		token,
 	})
@@ -78,7 +77,7 @@ func Login(c *gin.Context) {
 	//2.验证： 判断username是否存在
 	var user User
 	if userTmp, err := service.GetUserByName(username); err != nil {
-		c.JSON(422, common.Response{-1, "用户不存在"})
+		c.JSON(CodeUserNotExist, Response{-1, Msg(CodeUserNotExist)})
 		log.Error(err.Error())
 		return
 	} else {
@@ -88,20 +87,20 @@ func Login(c *gin.Context) {
 	//解密（转为byte切片），对比密码是否正确
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		//如果有err，说明密码错误
-		c.JSON(400, common.Response{-1, "密码错误"})
+		c.JSON(CodePasswordError, Response{-1, Msg(CodePasswordError)})
 		log.Error("密码错误")
 		return
 	}
 	//发放token
-	token, err := common.ReleaseToken(user)
+	token, err := ReleaseToken(user)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, common.Response{-1, "token发放失败"})
+		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		log.Error("token生成错误: %v", err)
 		return
 	}
 	//3.返回
-	c.JSON(200, common.UserLoginResponse{
-		common.Response{0, "登录成功"},
+	c.JSON(CodeSuccess, UserLoginResponse{
+		Response{0, Msg(CodeSuccess)},
 		user.Id,
 		token,
 	})
@@ -112,10 +111,10 @@ func UserInfo(c *gin.Context) {
 	fmt.Println("进入userInfo")
 	user, _ := c.Get("user")
 
-	c.JSON(200, common.UserResponse{
-		common.Response{
+	c.JSON(CodeSuccess, UserResponse{
+		Response{
 			0,
-			"获取用户信息成功",
+			Msg(CodeSuccess),
 		},
 		user.(User), //类型转换，要返回User，从any->User
 	})

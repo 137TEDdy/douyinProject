@@ -44,6 +44,7 @@ func RedisInit() {
 	port := conf.Redis.Port
 	auth := conf.Redis.Auth
 	host := fmt.Sprintf("%s:%s", address, port)
+
 	redisClient = &redis.Pool{
 		MaxIdle:     10,                //允许最大的空闲连接数，当空闲连接数超过该值时，多余的连接会被关闭
 		MaxActive:   0,                 //表示连接池中允许的最大活跃（非空闲）连接数，如果设置为 0，则表示没有限制

@@ -6,7 +6,7 @@
 package controller
 
 import (
-	"douyinProject/common"
+	. "douyinProject/common"
 	"douyinProject/log"
 	"douyinProject/model"
 	"douyinProject/service"
@@ -31,11 +31,11 @@ func CommentAction(c *gin.Context) {
 		comment, err := service.PublishComment(user.Id, videoid, comment_text, utils.GetCurrentTimeMMDD())
 		if err != nil {
 			log.Error(err.Error())
-			c.JSON(500, common.Response{-1, "发表评论失败"})
+			c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
 			return
 		}
-		c.JSON(200, common.CommentResponse{
-			common.Response{0, "发表评论成功"},
+		c.JSON(200, CommentResponse{
+			Response{0, Msg(CodeSuccess)},
 			comment,
 		})
 		return
@@ -48,10 +48,10 @@ func CommentAction(c *gin.Context) {
 		err = service.DeleteComment(commentId)
 		if err != nil {
 			log.Error(err.Error())
-			c.JSON(500, common.Response{-1, "删除评论出错"})
+			c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
 			return
 		}
-		c.JSON(200, common.Response{0, "删除评论成功"})
+		c.JSON(CodeSuccess, Response{0, Msg(CodeSuccess)})
 	}
 
 }
@@ -62,18 +62,18 @@ func GetCommentList(c *gin.Context) {
 	videoId, err := strconv.ParseInt(video_id, 10, 64)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "数字失败"})
+		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 
 	commentList, err := service.GetCommentList(videoId)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "获取评论列表失败"})
+		c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
 		return
 	}
-	c.JSON(200, common.CommentListResponse{
-		common.Response{0, "获取评论列表成功"},
+	c.JSON(CodeSuccess, CommentListResponse{
+		Response{0, Msg(CodeSuccess)},
 		commentList,
 	})
 }

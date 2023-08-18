@@ -43,26 +43,7 @@ func StoreVideo(user User, title, videoUrl, coverUrl string) error {
 		CoverUrl:    coverUrl,
 		PublishTime: utils.GetCurrentTime(),
 	}
-
-	//common.SendMessage(videoUrl, video)
-	//common.ConsumeMessages(videoUrl, func(message []byte) error {
-	//	var data Video
-	//	json.Unmarshal(message, &data)
-	//	err := repo.StoreVideo(data)
-	//	return err
-	//}, func(err error) {
-	//	log.Printf("Error occurred: %v", err)
-	//})
-	// 创建一个带有缓冲的通道，缓冲区大小为1
-	//errChan := make(chan error, 1)
-	//go func() {
-	//	if err := repo.StoreVideo(video); err != nil {
-	//		errChan <- err
-	//	}
-	//}()
-	//if err := <-errChan; err != nil {
-	//	return err
-	//}
+	//更新用户作品数
 
 	err := repo.StoreVideo(video)
 	return err

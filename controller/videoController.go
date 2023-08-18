@@ -6,7 +6,7 @@
 package controller
 
 import (
-	"douyinProject/common"
+	. "douyinProject/common"
 	"douyinProject/config"
 	"douyinProject/log"
 	"douyinProject/minioHandler"
@@ -20,7 +20,7 @@ import (
 
 // 封装video的feed请求返回值
 type VideosDto struct {
-	common.Response
+	Response
 	NextTime  int64    `json:"next_time,omitempty"`
 	VideoList []*Video `json:"video_list,omitempty"`
 }
@@ -55,12 +55,12 @@ func Feed(c *gin.Context) {
 
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500,
-			common.Response{-1, "获取视频列表失败"})
+		c.JSON(CodeGetVideoListError,
+			Response{-1, Msg(CodeGetVideoListError)})
 	}
 
-	c.JSON(200, VideosDto{
-		common.Response{0, "成功"},
+	c.JSON(CodeSuccess, VideosDto{
+		Response{0, Msg(CodeSuccess)},
 		utils.GetCurrentTime(),
 		videoList,
 	})
@@ -82,14 +82,14 @@ func Publish(c *gin.Context) {
 	fileFinalPath := filepath.Join(videoBasePath, filename) //文件最终保存在本地的位置
 	if err != nil {
 		log.Error("获取文件失败: ")
-		c.JSON(500, common.Response{-1, "获取文件失败 "})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		return
 	}
 
 	//保存文件
 	if err := c.SaveUploadedFile(data, fileFinalPath); err != nil {
 		log.Error("保存本地失败 ")
-		c.JSON(500, common.Response{-1, "保存本地失败 "})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		return
 	}
 	log.Info("视频已经保存到本地")
@@ -98,7 +98,7 @@ func Publish(c *gin.Context) {
 	videoUrl, err := client.UploadFile(user_id, "video", fileFinalPath)
 	if err != nil {
 		log.Error("上传视频失败")
-		c.JSON(500, common.Response{-1, "上传视频失败"})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		return
 	}
 
@@ -108,7 +108,7 @@ func Publish(c *gin.Context) {
 	coverUrl, err := client.UploadFile(user_id, "image", coverUrlTmp)
 	if err != nil {
 		log.Error("上传图片背景失败")
-		c.JSON(500, common.Response{-1, "上传图片背景失败"})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		return
 	}
 
@@ -116,11 +116,11 @@ func Publish(c *gin.Context) {
 	err = service.StoreVideo(user.(User), title, videoUrl, coverUrl)
 	if err != nil {
 		log.Error("存储视频出现问题：" + err.Error())
-		c.JSON(500, common.Response{-1, "上传图片背景失败"})
+		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
 		return
 	}
 	log.Info("上传视频成功")
-	c.JSON(200, common.Response{0, "上传视频成功"})
+	c.JSON(CodeSuccess, Response{0, Msg(CodeSuccess)})
 
 }
 
@@ -130,7 +130,7 @@ func GetUserVideoList(c *gin.Context) {
 	token := c.Query("token")
 	user_id := c.Query("user_id")
 	if token == "" {
-		c.JSON(500, common.Response{-1, "无用户token信息"})
+		c.JSON(CodeTokenNotexist, Response{-1, Msg(CodeTokenNotexist)})
 		return
 	}
 
@@ -139,12 +139,12 @@ func GetUserVideoList(c *gin.Context) {
 	videoList, err := service.GetVideoListByUserId(id)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{0, "获取用户发布列表失败"})
+		c.JSON(CodeGetVideoListError, Response{0, Msg(CodeGetVideoListError)})
 		return
 	}
 	//log.Println("视频列表：", videoList)
-	c.JSON(200, VideosDto{
-		Response:  common.Response{0, "获取用户发布列表成功"},
+	c.JSON(CodeSuccess, VideosDto{
+		Response:  Response{0, Msg(CodeSuccess)},
 		VideoList: videoList,
 	})
 }

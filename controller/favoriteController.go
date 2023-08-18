@@ -6,7 +6,7 @@
 package controller
 
 import (
-	"douyinProject/common"
+	. "douyinProject/common"
 	"douyinProject/log"
 	"douyinProject/model"
 	"douyinProject/service"
@@ -22,7 +22,7 @@ func FavoriteLike(c *gin.Context) {
 	usertmp, isExist := c.Get("user")
 	if isExist == false {
 		log.Error("根据token获取user出错")
-		c.JSON(500, common.Response{-1, "根据token获取user出错"})
+		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		return
 	}
 	user := usertmp.(model.User)
@@ -33,17 +33,17 @@ func FavoriteLike(c *gin.Context) {
 	videoId, err := strconv.ParseInt(video_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "数字转换出错"})
+		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 
 	err = service.FavoriteLike(videoId, user.Id, actionType)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "点赞操作出错"})
+		c.JSON(CodeFavoriteError, Response{-1, Msg(CodeFavoriteError)})
 		return
 	}
-	c.JSON(200, common.Response{0, "操作成功"})
+	c.JSON(CodeSuccess, Response{0, Msg(CodeSuccess)})
 
 }
 
@@ -54,20 +54,20 @@ func FavoriteList(c *gin.Context) {
 	userId, err := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "数字转换出错"})
+		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 	//根据userid查询视频列表
 	videoList, err := service.FavoriteList(userId)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, common.Response{-1, "查询视频列表出错"})
+		c.JSON(CodeFavoriteError, Response{-1, Msg(CodeFavoriteError)})
 		return
 	}
 
 	//响应数据
-	c.JSON(200, VideosDto{
-		Response:  common.Response{0, "获取点赞列表成功"},
+	c.JSON(CodeSuccess, VideosDto{
+		Response:  Response{0, Msg(CodeSuccess)},
 		VideoList: videoList,
 	})
 
