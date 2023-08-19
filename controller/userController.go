@@ -11,6 +11,7 @@ import (
 	. "douyinProject/model"
 	"douyinProject/service"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -118,4 +119,11 @@ func UserInfo(c *gin.Context) {
 		},
 		user.(User), //类型转换，要返回User，从any->User
 	})
+}
+
+// 封装user的关注列表请求返回值
+type UsersDto struct {
+	Response
+	NextTime  int64   `json:"next_time,omitempty"`
+	UsersList []*User `json:"user_list,omitempty"`
 }

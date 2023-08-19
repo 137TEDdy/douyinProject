@@ -15,6 +15,7 @@ const (
 	CodeTokenError
 	CodeCommentError
 	CodeFavoriteError
+	CodeFollowError
 	CodeGetVideoListError
 	CodePasswordError
 	CodeVideoPublishError
@@ -32,6 +33,7 @@ var codeMap = map[int]string{
 	CodeTokenError:        "token相关错误",
 	CodeCommentError:      "评论相关错误",
 	CodeFavoriteError:     "点赞错误",
+	CodeFollowError:       "关注错误",
 	CodePasswordError:     "密码错误",
 	CodeGetVideoListError: "获取视频列表错误",
 	CodeVideoPublishError: "视频发布错误",
