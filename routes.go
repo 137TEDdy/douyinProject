@@ -39,12 +39,11 @@ func RouteInit(r *gin.Engine) *gin.Engine {
 
 	relationRouter := baseRouter.Group("/relation")
 	{
-		relationRouter.POST("/action/", controller.FollowIdol)
-		relationRouter.GET("/follow/list/", controller.FollowList)
-		relationRouter.GET("/follower/list/", controller.FollowerList)
+		relationRouter.POST("/action/", middleware.TokenMiddleware(), controller.FollowIdol)
+		relationRouter.GET("/follow/list/", middleware.TokenMiddleware(), controller.FollowList)
+		relationRouter.GET("/follower/list/", middleware.TokenMiddleware(), controller.FollowerList)
 		//relationRouter.GET("/friend/list/", controller.FriendList)
 	}
-
 
 	return r
 }
