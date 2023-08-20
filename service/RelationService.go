@@ -31,7 +31,7 @@ func FollowsList(user_id int64) ([]*model.User, error) {
 	//查询用户相关信息
 	var userList []*model.User
 	for _, val := range idols {
-		user_id := val.Id
+		user_id := val.FollowerId
 		user, err := repo.GetUserById(user_id) //获取
 		if err != nil {                        //出错则不添加这条用户信息
 			log.Error(err.Error())
@@ -50,7 +50,7 @@ func FollowersList(user_id int64) ([]*model.User, error) {
 	//查询用户相关信息
 	var userList []*model.User
 	for _, val := range idols {
-		user_id := val.Id
+		user_id := val.FollowId
 		user, err := repo.GetUserById(user_id) //获取
 		if err != nil {                        //出错则不添加这条用户信息
 			log.Error(err.Error())
@@ -59,4 +59,24 @@ func FollowersList(user_id int64) ([]*model.User, error) {
 		userList = append(userList, &user)
 	}
 	return userList, nil
+}
+
+func FriendList(user_id int64) ([]*model.User, error) {
+	var friendList []*model.User
+	//user, err := repo.CacheGetUser(user_id)
+	//if err != nil {
+	//	log.Error("user:%v miss cache", user_id)
+	//	return nil, nil
+	//}
+	followList, _ := FollowsList(user_id)
+	followerList, _ := FollowersList(user_id)
+	for i := 0; i < len(followList); i++ {
+		for j := 0; j < len(followerList); j++ {
+			if followList[i].Id == followerList[j].Id {
+				friendList = append(friendList, followList[i])
+			}
+		}
+	}
+	//repo.CacheSetUser(user)
+	return friendList, nil
 }

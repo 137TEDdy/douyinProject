@@ -23,3 +23,8 @@ func GetCurrentTimeForString() string {
 	currentTime := time.Now()
 	return currentTime.Format("200601021504")
 }
+
+func GetCurrentTimeYyyy_MM_dd_HH_MM_ss() string {
+	currentTime := time.Now()
+	return currentTime.Format("2006-01-02 15:04:05")
+}

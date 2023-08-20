@@ -10,6 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type FriendDto struct {
+	Response
+	FriendList []*model.User `json:"user_list,omitempty"`
+}
+
 // 关注功能
 func FollowIdol(c *gin.Context) {
 	//判断用户token合法性在中间件完成
@@ -62,7 +67,7 @@ func FollowList(c *gin.Context) {
 	}
 
 	//响应数据
-	c.JSON(CodeSuccess,UsersDto{
+	c.JSON(CodeSuccess, UsersDto{
 		Response:  Response{0, Msg(CodeSuccess)},
 		UsersList: idolsList,
 	})
@@ -87,8 +92,32 @@ func FollowerList(c *gin.Context) {
 	}
 
 	//响应数据
-	c.JSON(CodeSuccess,UsersDto{
+	c.JSON(CodeSuccess, UsersDto{
 		Response:  Response{0, Msg(CodeSuccess)},
 		UsersList: idolsList,
+	})
+}
+
+// 获取所有关注登录用户的粉丝列表
+func FriendList(c *gin.Context) {
+	token := c.Query("token")
+	user_id := c.Query("user_id")
+	if token == "" {
+		c.JSON(500, Response{-1, "无用户token信息"})
+		return
+	}
+
+	//查数据库，根据userId查出好友列表
+	id, _ := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
+	userList, err := service.FriendList(id)
+	if err != nil {
+		log.Error(err.Error())
+		c.JSON(500, Response{0, "获取用户好友列表失败"})
+		return
+	}
+	//log.Println("好友列表：", friendList)
+	c.JSON(200, FriendDto{
+		Response:   Response{0, "获取该用户好友列表成功"},
+		FriendList: userList,
 	})
 }

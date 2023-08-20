@@ -1,4 +1,4 @@
-FROM golang:1.20 AS build
+FROM golang:latest AS build
 
 COPY biz /go/src/biz/
 COPY pkg /go/src/pkg/
@@ -10,15 +10,15 @@ RUN go env -w GO111MODULE=on \
   && go env -w GOOS=linux \
   && go env -w GOARCH=amd64
 RUN go mod tidy
-RUN go build -o douyinProject
+RUN go build -o douyin_project
 
 
 FROM jrottenberg/ffmpeg
 
 RUN mkdir "/app"
-COPY --from=build /go/src/douyinProject /app/douyinProject
+COPY --from=build /go/src/douyinProject /app/douyin_project
 
-RUN chmod +x /app/douyinProject
+RUN chmod +x /app/douyin_project
 
 EXPOSE 18005
-ENTRYPOINT ["/app/douyinProject"]
+ENTRYPOINT ["/app/douyin_project"]
