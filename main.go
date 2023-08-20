@@ -22,6 +22,9 @@ func main() {
 	r := gin.Default()
 	RouteInit(r)
 	Init()
-	r.Run(":9093")
 
+	err := r.Run(":9093")
+	if err != nil {
+		return
+	}
 }

@@ -45,5 +45,10 @@ func RouteInit(r *gin.Engine) *gin.Engine {
 		//relationRouter.GET("/friend/list/", controller.FriendList)
 	}
 
+	messageRouter := baseRouter.Group("/message")
+	{
+		messageRouter.POST("/action/", middleware.TokenMiddleware(), controller.ChatAction)
+		messageRouter.GET("/chat/", middleware.TokenMiddleware(), controller.GetChatList)
+	}
 	return r
 }

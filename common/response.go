@@ -36,3 +36,7 @@ type CommentListResponse struct {
 	Response
 	Comments []*model.Comment `json:"comment_list"`
 }
+type MessageListResponse struct {
+	Response
+	Messages []*model.Message `json:"messages_list"`
+}
