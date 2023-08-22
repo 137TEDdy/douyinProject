@@ -10,8 +10,6 @@ import (
 	"douyinProject/log"
 	. "douyinProject/model"
 	"douyinProject/service"
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -109,7 +107,6 @@ func Login(c *gin.Context) {
 
 // 功能：获取用户信息
 func UserInfo(c *gin.Context) {
-	fmt.Println("进入userInfo")
 	user, _ := c.Get("user")
 
 	c.JSON(CodeSuccess, UserResponse{

@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-var serverAddr = "http://localhost:8080"
+var serverAddr = "http://localhost:9093"
 var testUserA = "douyinTestUserA"
 var testUserB = "douyinTestUserB"
 

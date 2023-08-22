@@ -5,7 +5,10 @@
 
 package utils
 
-import "time"
+import (
+	"math/rand"
+	"time"
+)
 
 // 返回当前时间
 func GetCurrentTime() int64 {
@@ -27,4 +30,11 @@ func GetCurrentTimeForString() string {
 func GetCurrentTimeYyyy_MM_dd_HH_MM_ss() string {
 	currentTime := time.Now()
 	return currentTime.Format("2006-01-02 15:04:05")
+}
+
+func GetRandomNumber() int {
+	rand.Seed(time.Now().Unix())
+	// 生成随机数
+	randomNum := rand.Intn(3) // 生成0~2之间的随机数
+	return randomNum
 }

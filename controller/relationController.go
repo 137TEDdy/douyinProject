@@ -37,6 +37,14 @@ func FollowIdol(c *gin.Context) {
 		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
+	//用户不能关注自己
+	if user.Id == idolId {
+		c.JSON(CodeInvalidParams, Response{
+			StatusCode: -1,
+			StatusMsg:  "",
+		})
+		return
+	}
 
 	err = service.FollowIdol(user.Id, idolId, actionType)
 	if err != nil {

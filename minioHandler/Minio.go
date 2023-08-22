@@ -106,17 +106,16 @@ func (m *Minio) UploadFile(userID int64, filetype, filePath string) (string, err
 	fileName.WriteString(strconv.FormatInt(utils.GetCurrentTime(), 10)) //int转换成字符串，十进制表示
 	fileName.WriteString(suffix)
 	log.Info("filename： ", fileName.String())
-	log.Info("bucketname： ", bucketName)
 	log.Info("文件路径filepath： ", filePath)
 
-	n, err := m.MinioClient.FPutObject(bucketName, fileName.String(), filePath, minio.PutObjectOptions{
+	_, err := m.MinioClient.FPutObject(bucketName, fileName.String(), filePath, minio.PutObjectOptions{
 		ContentType: contentType,
 	})
 	if err != nil {
 		log.Error("更新文件错误:%s", err.Error())
 		return "", err
 	}
-	log.Info("更新 %dbyte大小的文件成功，文件名:%s", n, fileName)
+	log.Info("更新 文件成功，文件名:%s", fileName)
 
 	url := "http://" + m.endpoint + "/" + bucketName + "/" + fileName.String()
 	return url, nil

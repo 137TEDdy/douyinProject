@@ -5,15 +5,15 @@ minio:
   SecretAccessKey: minioted  #密码
   Videobuckets: tiktokvideos    #名字不能有大写
   Imagebuckets: tiktokimages
-  VideoBasePath: /tmp/file/video/     #本地文件的目录，文件存在这个地方；上传时直接拼接文件名即可
-  ImageBasePath: /tmp/file/log/
+  VideoBasePath: D:\1\videos    #本地文件的目录，文件存在这个地方；上传时直接拼接文件名即可
+  ImageBasePath: D:\1\imgs
 
 mysql:
   Host: localhost
   Port: 3306
   DataBase: douyin
   Username: root
-  Password: gjh1375809659
+  Password:
 
 redis:
   address: 127.0.0.1 #192.168.1.11
@@ -21,6 +21,6 @@ redis:
   port: 6379
   auth:     #默认为空，当启用了密码验证（通过配置文件中的 requirepass 参数）时，连接到Redis时需要提供正确的密码
 
-logfile: /tmp/file/log/
+logfile: D:\1\log
 level: info
 
