@@ -22,9 +22,7 @@ import (
 func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
-	//fmt.Println(username, "  ", password)
 
-	//token := username + password
 	//2.验证： 判断username是否存在,  存在err说明没有这个用户名
 	if _, err := service.GetUserByName(username); err == nil {
 		c.JSON(CodeUserExist, Response{-1, Msg(CodeUserExist)})
@@ -38,7 +36,6 @@ func Register(c *gin.Context) {
 		log.Error("加密错误")
 		return
 	}
-	//fmt.Println("加密密码：", hasedPassword)
 	//4.创建用户
 	service.CreateUser(username, string(hasedPassword))
 
@@ -51,8 +48,6 @@ func Register(c *gin.Context) {
 		log.Error("获取用户信息或token错误")
 		return
 	}
-	//fmt.Println("user：", user)
-	//.返回结果
 	c.JSON(CodeSuccess, UserLoginResponse{
 		Response{0, Msg(CodeSuccess)},
 		LastUserId,
@@ -107,7 +102,11 @@ func Login(c *gin.Context) {
 
 // 功能：获取用户信息
 func UserInfo(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, flag := c.Get("user")
+	if flag == false {
+		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
+		return
+	}
 
 	c.JSON(CodeSuccess, UserResponse{
 		Response{

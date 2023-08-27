@@ -63,7 +63,7 @@ func TokenMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
+		log.Info("token:", token)
 		log.Info("获取用户token成功")
 		//用户存在 将user信息写入上下文,并放行
 		ctx.Set("user", user)

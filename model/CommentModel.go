@@ -17,3 +17,11 @@ type Comment struct {
 func (Comment) TableName() string {
 	return "comments"
 }
+
+//
+//// 插入后填充id
+//func (c Comment) AfterCreate(tx *gorm.DB) error {
+//	// 更新Comment的ID值
+//	c.Id = tx.Statement.Context.Value("gorm:comment_id").(int64)
+//	return nil
+//}

@@ -33,15 +33,16 @@ func PublishComment(user_id, video_id int64, content, time string) (model.Commen
 	//传入视频id，修改评论数
 	UpdateVideo(video_id, 1, "comment_count")
 
-	//缓存
-	CacheSetComment(video_id, comment)
-
 	//向数据库插入数据
 	//在if语句中的err只在if语句的作用域中有效
 	if err := common.DB.Create(&comment).Error; err != nil {
 		log.Error(err.Error())
 		return comment, err
 	}
+	//缓存
+	CacheSetComment(video_id, comment)
+	//必须填充comment的id属性，不然id为0；
+	log.Info("comment的id是：", comment.Id)
 	return comment, nil
 
 }
@@ -64,6 +65,7 @@ func GetCommentByID(comment_id int64) (model.Comment, error) {
 func DeleteComment(comment_id int64) error {
 
 	//先查询comment
+	log.Info("开始准备删除评论")
 	comment, err := GetCommentByID(comment_id)
 	//如果缓存存在则删除它
 	if comment.Id != 0 {
@@ -81,7 +83,7 @@ func DeleteComment(comment_id int64) error {
 	}
 	//传入视频id，修改评论数
 	UpdateVideo(comment.VideoId, -1, "comment_count")
-
+	log.Info("删除评论成功")
 	return nil //删除成功
 }
 
