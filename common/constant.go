@@ -19,6 +19,7 @@ const (
 	CodeGetVideoListError
 	CodePasswordError
 	CodeVideoPublishError
+	CodeMessageError
 )
 const CodeSuccess = 200
 
@@ -37,6 +38,7 @@ var codeMap = map[int]string{
 	CodePasswordError:     "密码错误",
 	CodeGetVideoListError: "获取视频列表错误",
 	CodeVideoPublishError: "视频发布错误",
+	CodeMessageError:      "消息发送出错",
 }
 
 func Msg(code int) string {

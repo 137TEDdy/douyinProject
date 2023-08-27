@@ -31,10 +31,10 @@ func CommentAction(c *gin.Context) {
 		comment, err := service.PublishComment(user.Id, videoid, comment_text, utils.GetCurrentTimeMMDD())
 		if err != nil {
 			log.Error(err.Error())
-			c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
+			Resp(c, CodeCommentError, Response{-1, Msg(CodeCommentError)})
 			return
 		}
-		c.JSON(200, CommentResponse{
+		Resp(c, 200, CommentResponse{
 			Response{0, Msg(CodeSuccess)},
 			comment,
 		})
@@ -48,10 +48,10 @@ func CommentAction(c *gin.Context) {
 		err = service.DeleteComment(commentId)
 		if err != nil {
 			log.Error(err.Error())
-			c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
+			Resp(c, CodeCommentError, Response{-1, Msg(CodeCommentError)})
 			return
 		}
-		c.JSON(CodeSuccess, Response{0, Msg(CodeSuccess)})
+		Resp(c, CodeSuccess, Response{0, Msg(CodeSuccess)})
 	}
 
 }
@@ -62,17 +62,17 @@ func GetCommentList(c *gin.Context) {
 	videoId, err := strconv.ParseInt(video_id, 10, 64)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
+		Resp(c, CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 
 	commentList, err := service.GetCommentList(videoId)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeCommentError, Response{-1, Msg(CodeCommentError)})
+		Resp(c, CodeCommentError, Response{-1, Msg(CodeCommentError)})
 		return
 	}
-	c.JSON(CodeSuccess, CommentListResponse{
+	Resp(c, CodeSuccess, CommentListResponse{
 		Response{0, Msg(CodeSuccess)},
 		commentList,
 	})

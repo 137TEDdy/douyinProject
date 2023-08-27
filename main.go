@@ -25,6 +25,7 @@ func main() {
 
 	err := r.Run(":4000")
 	if err != nil {
+		log.Error("启动错误")
 		return
 	}
 

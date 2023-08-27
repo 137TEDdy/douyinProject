@@ -23,7 +23,7 @@ func FollowIdol(c *gin.Context) {
 	usertmp, isExist := c.Get("user")
 	if isExist == false {
 		log.Error("根据token获取user出错")
-		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
+		Resp(c, CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		return
 	}
 	user := usertmp.(model.User)
@@ -34,12 +34,12 @@ func FollowIdol(c *gin.Context) {
 	idolId, err := strconv.ParseInt(to_user_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
+		Resp(c, CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 	//用户不能关注自己
 	if user.Id == idolId {
-		c.JSON(CodeInvalidParams, Response{
+		Resp(c, CodeInvalidParams, Response{
 			StatusCode: -1,
 			StatusMsg:  "",
 		})
@@ -49,10 +49,10 @@ func FollowIdol(c *gin.Context) {
 	err = service.FollowIdol(user.Id, idolId, actionType)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
+		Resp(c, CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
 		return
 	}
-	c.JSON(CodeSuccess, Response{0, Msg(CodeSuccess)})
+	Resp(c, CodeSuccess, Response{0, Msg(CodeSuccess)})
 
 }
 
@@ -63,19 +63,19 @@ func FollowList(c *gin.Context) {
 	userId, err := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
+		Resp(c, CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 	//根据userid查询idol列表
 	idolsList, err := service.FollowsList(userId)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
+		Resp(c, CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
 		return
 	}
 
 	//响应数据
-	c.JSON(CodeSuccess, UsersDto{
+	Resp(c, CodeSuccess, UsersDto{
 		Response:  Response{0, Msg(CodeSuccess)},
 		UsersList: idolsList,
 	})
@@ -88,19 +88,19 @@ func FollowerList(c *gin.Context) {
 	userId, err := strconv.ParseInt(user_id, 10, 64) //转成int64，  参数含义：十进制的64位
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
+		Resp(c, CodeInvalidParams, Response{-1, Msg(CodeInvalidParams)})
 		return
 	}
 	//根据userid查询idol列表
 	idolsList, err := service.FollowersList(userId)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
+		Resp(c, CodeFavoriteError, Response{-1, Msg(CodeFollowError)})
 		return
 	}
 
 	//响应数据
-	c.JSON(CodeSuccess, UsersDto{
+	Resp(c, CodeSuccess, UsersDto{
 		Response:  Response{0, Msg(CodeSuccess)},
 		UsersList: idolsList,
 	})
@@ -111,7 +111,7 @@ func FriendList(c *gin.Context) {
 	token := c.Query("token")
 	user_id := c.Query("user_id")
 	if token == "" {
-		c.JSON(500, Response{-1, "无用户token信息"})
+		Resp(c, 500, Response{-1, "无用户token信息"})
 		return
 	}
 
@@ -120,11 +120,11 @@ func FriendList(c *gin.Context) {
 	userList, err := service.FriendList(id)
 	if err != nil {
 		log.Error(err.Error())
-		c.JSON(500, Response{0, "获取用户好友列表失败"})
+		Resp(c, 500, Response{0, "获取用户好友列表失败"})
 		return
 	}
 	//log.Println("好友列表：", friendList)
-	c.JSON(200, FriendDto{
+	Resp(c, 200, FriendDto{
 		Response:   Response{0, "获取该用户好友列表成功"},
 		FriendList: userList,
 	})

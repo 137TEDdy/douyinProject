@@ -1,5 +1,5 @@
 minio:
-  Host: 10.72.20.1   #主机ip（通过WLAN）
+  Host: 10.63.180.0   #主机ip（通过WLAN）
   Port: 9000        #注意，不是9090
   AccessKeyID: minioted   #id
   SecretAccessKey: minioted  #密码

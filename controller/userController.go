@@ -25,14 +25,14 @@ func Register(c *gin.Context) {
 
 	//2.验证： 判断username是否存在,  存在err说明没有这个用户名
 	if _, err := service.GetUserByName(username); err == nil {
-		c.JSON(CodeUserExist, Response{-1, Msg(CodeUserExist)})
+		Resp(c, CodeUserExist, Response{-1, Msg(CodeUserExist)})
 		log.Error("用户已经存在")
 		return
 	}
 	//对密码进行加密
 	hasedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(CodeServerError, Response{-1, Msg(CodeServerError)})
+		Resp(c, CodeServerError, Response{-1, Msg(CodeServerError)})
 		log.Error("加密错误")
 		return
 	}
@@ -44,11 +44,11 @@ func Register(c *gin.Context) {
 	LastUserId := user.Id
 	//查询最后一位用户的id，用于自增+1作为新用户的id
 	if err != nil {
-		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
+		Resp(c, CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		log.Error("获取用户信息或token错误")
 		return
 	}
-	c.JSON(CodeSuccess, UserLoginResponse{
+	Resp(c, CodeSuccess, UserLoginResponse{
 		Response{0, Msg(CodeSuccess)},
 		LastUserId,
 		token,
@@ -71,7 +71,7 @@ func Login(c *gin.Context) {
 	//2.验证： 判断username是否存在
 	var user User
 	if userTmp, err := service.GetUserByName(username); err != nil {
-		c.JSON(CodeUserNotExist, Response{-1, Msg(CodeUserNotExist)})
+		Resp(c, CodeUserNotExist, Response{-1, Msg(CodeUserNotExist)})
 		log.Error(err.Error())
 		return
 	} else {
@@ -81,19 +81,24 @@ func Login(c *gin.Context) {
 	//解密（转为byte切片），对比密码是否正确
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		//如果有err，说明密码错误
-		c.JSON(CodePasswordError, Response{-1, Msg(CodePasswordError)})
+		Resp(c, CodePasswordError, Response{-1, Msg(CodePasswordError)})
 		log.Error("密码错误")
 		return
 	}
 	//发放token
 	token, err := ReleaseToken(user)
 	if err != nil {
-		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
+		Resp(c, CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		log.Error("token生成错误: %v", err)
 		return
 	}
 	//3.返回
-	c.JSON(CodeSuccess, UserLoginResponse{
+	//c.JSON(CodeSuccess, UserLoginResponse{
+	//	Response{0, Msg(CodeSuccess)},
+	//	user.Id,
+	//	token,
+	//})
+	Resp(c, CodeSuccess, UserLoginResponse{
 		Response{0, Msg(CodeSuccess)},
 		user.Id,
 		token,
@@ -104,11 +109,11 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	user, flag := c.Get("user")
 	if flag == false {
-		c.JSON(CodeTokenError, Response{-1, Msg(CodeTokenError)})
+		Resp(c, CodeTokenError, Response{-1, Msg(CodeTokenError)})
 		return
 	}
 
-	c.JSON(CodeSuccess, UserResponse{
+	Resp(c, CodeSuccess, UserResponse{
 		Response{
 			0,
 			Msg(CodeSuccess),

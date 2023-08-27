@@ -114,7 +114,7 @@ func StoreVideo(video model.Video) error {
 		return err
 	}
 	//更新用户的作品数
-	UpdateUser(video.Author.Id, 1, "work_count")
+	go UpdateUser(video.Author.Id, 1, "work_count")
 
 	return nil
 }

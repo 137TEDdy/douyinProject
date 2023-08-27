@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"douyinProject/common"
+	. "douyinProject/common"
 	"douyinProject/log"
 	"douyinProject/model"
 	"douyinProject/service"
@@ -31,10 +31,10 @@ func ChatAction(c *gin.Context) {
 		_, err := service.PublishMessage(message)
 		if err != nil {
 			log.Error(err.Error())
-			c.JSON(500, common.Response{-1, "发送消息失败"})
+			Resp(c, CodeMessageError, Response{-1, Msg(CodeMessageError)})
 			return
 		}
-		c.JSON(200, common.Response{0, "发送消息成功"})
+		Resp(c, CodeSuccess, Response{0, Msg(CodeSuccess)})
 		return
 	}
 }
@@ -55,12 +55,12 @@ func GetChatList(c *gin.Context) {
 	log.Info("参数里的时间为:", timeStr)
 
 	message, err := service.GetChatList(user_id, touserid, timeStr)
-	c.JSON(200, common.MessageListResponse{
-		Response: common.Response{0, "获取聊天记录"},
+	Resp(c, CodeSuccess, MessageListResponse{
+		Response: Response{0, Msg(CodeSuccess)},
 		Messages: message,
 	})
 	if err != nil {
-
+		log.Error("获取消息列表错误")
 	}
 	return
 	//

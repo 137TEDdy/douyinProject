@@ -40,7 +40,7 @@ func PublishComment(user_id, video_id int64, content, time string) (model.Commen
 		return comment, err
 	}
 	//缓存
-	CacheSetComment(video_id, comment)
+	go CacheSetComment(video_id, comment)
 	//必须填充comment的id属性，不然id为0；
 	log.Info("comment的id是：", comment.Id)
 	return comment, nil
@@ -82,7 +82,7 @@ func DeleteComment(comment_id int64) error {
 		return err
 	}
 	//传入视频id，修改评论数
-	UpdateVideo(comment.VideoId, -1, "comment_count")
+	go UpdateVideo(comment.VideoId, -1, "comment_count")
 	log.Info("删除评论成功")
 	return nil //删除成功
 }
@@ -121,7 +121,7 @@ func GetCommentList(video_id int64) ([]*model.Comment, error) {
 
 		item.User = user
 		//到这里的是因为没有缓存过的，因此缓存数据
-		CacheSetComment(video_id, *item)
+		go CacheSetComment(video_id, *item)
 	}
 	return commentList, nil
 }
