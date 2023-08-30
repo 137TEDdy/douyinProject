@@ -2,14 +2,15 @@ FROM golang:latest AS build
 
 COPY common /go/src/common/
 COPY config /go/src/config/
-COPY controller /go/src/pkg/
-COPY log /go/src/pkg/
-COPY middleware /go/src/pkg/
-COPY model /go/src/pkg/
-COPY repo /go/src/pkg/
-COPY service /go/src/pkg/
-COPY test /go/src/pkg/
-COPY utils /go/src/pkg/
+COPY controller /go/src/controller/
+COPY log /go/src/log/
+COPY middleware /go/src/middleware/
+COPY model /go/src/model/
+COPY repo /go/src/repo/
+COPY service /go/src/service/
+COPY test /go/src/test/
+COPY utils /go/src/utils/
+COPY minioHandler /go/src/minioHandler/
 
 COPY go.mod go.sum *.go /go/src/
 
@@ -24,7 +25,7 @@ RUN go build -o douyin_project
 FROM jrottenberg/ffmpeg
 
 RUN mkdir "/app"
-COPY --from=build /go/src/douyinProject /app/douyin_project
+COPY --from=build /go/src/douyin_project /app/douyin_project
 
 RUN chmod +x /app/douyin_project
 
