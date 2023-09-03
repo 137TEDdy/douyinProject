@@ -1,4 +1,4 @@
-FROM golang:latest AS build
+FROM golang:1.20-alpine AS build
 
 COPY common /go/src/common/
 COPY config /go/src/config/
@@ -12,7 +12,7 @@ COPY test /go/src/test/
 COPY utils /go/src/utils/
 COPY minioHandler /go/src/minioHandler/
 
-COPY go.mod go.sum *.go /go/src/
+COPY go.mod go.sum *.go config.yaml /go/src/
 
 WORKDIR "/go/src/"
 RUN go env -w GO111MODULE=on \
@@ -26,6 +26,7 @@ FROM jrottenberg/ffmpeg
 
 RUN mkdir "/app"
 COPY --from=build /go/src/douyin_project /app/douyin_project
+COPY --from=build /go/src/config.yaml /app/douyin_project
 
 RUN chmod +x /app/douyin_project
 
