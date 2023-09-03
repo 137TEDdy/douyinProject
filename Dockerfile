@@ -26,7 +26,7 @@ FROM jrottenberg/ffmpeg
 
 RUN mkdir "/app"
 COPY --from=build /go/src/douyin_project /app/douyin_project
-COPY --from=build /go/src/config.yaml /app/douyin_project
+COPY --from=build /go/src/config.yaml /app/config.yaml
 
 RUN chmod +x /app/douyin_project
 
