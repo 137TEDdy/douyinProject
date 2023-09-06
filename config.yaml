@@ -1,5 +1,5 @@
 minio:
-  Host: 10.63.180.0   #主机ip（通过WLAN）
+  Host: 172.27.16.1 #主机ip（通过WLAN）
   Port: 9000        #注意，不是9090
   AccessKeyID: minioted   #id
   SecretAccessKey: minioted  #密码
@@ -13,7 +13,7 @@ mysql:
   Port: 3306
   DataBase: douyin
   Username: root
-  Password: gjh1375809659
+  Password: 7921SJK
 
 redis:
   address: 127.0.0.1 #192.168.1.11

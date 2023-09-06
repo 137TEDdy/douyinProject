@@ -9,7 +9,8 @@ import (
 	"strconv"
 )
 
-func FollowOrUnFollowAction(follow_id, follower_id int64, isFollow bool) error{
+//关注或取消关注
+func FollowOrUnFollowAction(follow_id int64, follower_id int64, action_type int) error{
 	//isFollow为1关注，0取消关注
 	//首先为relation填充值，否则create时这两个id值为0
 	relation := model.Relation{
@@ -18,24 +19,41 @@ func FollowOrUnFollowAction(follow_id, follower_id int64, isFollow bool) error{
 	}
 	var err error
 	err = common.DB.Where("follow_id = ? and follower_id = ?", follow_id, follower_id).Take(&relation).Error
-	//这里由于没查到，肯定有err； 只是不能是ErrRecordNotFound; （这里必须判断nil的情况，不然可能空指针错误）
-	if err != nil && err != gorm.ErrRecordNotFound {
-		log.Error(err.Error())
-		return err
-	}
-	if relation.Id != 0 {
-		log.Error("已经存在该关注记录，无法再次关注")
-		return errors.New("已经存在该关注记录，无法再次关注")
+	if action_type==1 {
+		//关注
+		//这里由于没查到，肯定有err； 只是不能是ErrRecordNotFound; （这里必须判断nil的情况，不然可能空指针错误）
+		if err != nil && err != gorm.ErrRecordNotFound {
+			log.Error(err.Error())
+			return err
+		}
+		if relation.Id != 0 {
+			log.Error("已经存在该关注记录，无法再次关注")
+			return errors.New("已经存在该关注记录，无法再次关注")
+		}
+
+		//插入记录
+		err = common.DB.Create(&relation).Error
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+	}else{
+
+		if relation.Id != 0 {
+			log.Error(follow_id,"未关注",follower_id)
+			return errors.New("未关注，请先关注")
+		}
+
+		//删除记录
+		err=common.DB.Delete(&relation).Error
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
 	}
 
-	//插入记录
-	err = common.DB.Create(&relation).Error
-	if err != nil {
-		log.Error(err.Error())
-		return err
-	}
 	var op int64;
-	if isFollow {
+	if action_type==1 {
 		op=add1
 	}else{
 		op=sub1;
@@ -50,16 +68,7 @@ func FollowOrUnFollowAction(follow_id, follower_id int64, isFollow bool) error{
 	return nil
 }
 
-// 关注
-func Follow(follow_id, follower_id int64) error {
-	
-	return FollowOrUnFollowAction(follow_id, follower_id, true);
-}
 
-// 取消关注
-func UnFollow(follow_id, follower_id int64) error {
-	return FollowOrUnFollowAction(follow_id, follower_id, false);
-}
 
 // 查询某用户的在favorite表里所有记录 查看我的关注
 func GetFollowsByUserid(follow_id int64) ([]*model.Relation, error) {

@@ -7,17 +7,10 @@ import (
 )
 
 func FollowIdol(user_id, idol_id int64, action_type int) error {
-	if action_type == 1 {
-		err := repo.Follow(user_id, idol_id)
 
-		if err != nil {
-			return err
-		}
-	} else {
-		err := repo.UnFollow(user_id, idol_id)
-		if err != nil {
-			return err
-		}
+	err := repo.FollowOrUnFollowAction(user_id, idol_id,action_type)
+	if err!=nil {
+		return err;
 	}
 	return nil
 }
@@ -63,11 +56,6 @@ func FollowersList(user_id int64) ([]*model.User, error) {
 
 func FriendList(user_id int64) ([]*model.User, error) {
 	var friendList []*model.User
-	//user, err := repo.CacheGetUser(user_id)
-	//if err != nil {
-	//	log.Error("user:%v miss cache", user_id)
-	//	return nil, nil
-	//}
 	followList, _ := FollowsList(user_id)
 	followerList, _ := FollowersList(user_id)
 	for i := 0; i < len(followList); i++ {
@@ -77,6 +65,5 @@ func FriendList(user_id int64) ([]*model.User, error) {
 			}
 		}
 	}
-	//repo.CacheSetUser(user)
 	return friendList, nil
 }

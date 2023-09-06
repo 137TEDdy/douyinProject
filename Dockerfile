@@ -1,33 +1,17 @@
-FROM golang:latest AS build
+FROM golang:1.20-alpine
 
-COPY common /go/src/common/
-COPY config /go/src/config/
-COPY controller /go/src/controller/
-COPY log /go/src/log/
-COPY middleware /go/src/middleware/
-COPY model /go/src/model/
-COPY repo /go/src/repo/
-COPY service /go/src/service/
-COPY test /go/src/test/
-COPY utils /go/src/utils/
-COPY minioHandler /go/src/minioHandler/
+WORKDIR /apps
+COPY . .
 
-COPY go.mod go.sum *.go /go/src/
+# #构建后端和安装环境
+RUN go env -w GOPROXY=https://goproxy.cn,direct \
+    && go mod tidy \
+    && go build -o douyin_project main.go \
+    && sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk update --no-cache \
+    && apk add ffmpeg  
 
-WORKDIR "/go/src/"
-RUN go env -w GO111MODULE=on \
-  && go env -w GOPROXY=https://goproxy.cn,direct \
-  && go env -w GOOS=linux \
-  && go env -w GOARCH=amd64
-RUN go mod tidy
-RUN go build -o douyin_project
+# 暴露端口
+EXPOSE 8080
 
-FROM jrottenberg/ffmpeg
-
-RUN mkdir "/app"
-COPY --from=build /go/src/douyin_project /app/douyin_project
-
-RUN chmod +x /app/douyin_project
-
-EXPOSE 18005
-ENTRYPOINT ["/app/douyin_project"]
+CMD ["/apps/douyin_project"]

@@ -1,0 +1,4 @@
+# douyinProject/repo
+repo\relationRepo.go:44:32: too many arguments in call to errors.New
+	have (int64, string, int64)
+	want (string)

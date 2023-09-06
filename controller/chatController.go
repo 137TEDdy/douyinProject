@@ -45,7 +45,7 @@ func GetChatList(c *gin.Context) {
 	user_id := user.Id
 
 	touserid, _ := strconv.ParseInt(to_user_id, 10, 64)
-	//获取当前时间，并格式化
+	//获取上次最新记录的时间，并格式化
 	timeTmp := c.Query("pre_msg_time")
 	timestamp, _ := strconv.ParseInt(timeTmp, 10, 64)
 	// 根据秒级时间戳创建time.Time对象
