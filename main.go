@@ -3,13 +3,13 @@ package main
 import (
 	"douyinProject/common"
 	"douyinProject/config"
-	"douyinProject/log"
 	"douyinProject/controller"
+	"douyinProject/log"
 	"douyinProject/middleware"
-	"github.com/gin-gonic/gin"
 	"douyinProject/minioHandler"
-)
 
+	"github.com/gin-gonic/gin"
+)
 
 func Init() {
 
