@@ -13,7 +13,7 @@ mysql:
   Port: 3306
   DataBase: douyin
   Username: root
-  Password: 7921SJK
+  Password: 123456
 
 redis:
   address: 127.0.0.1 #192.168.1.11
