@@ -18,7 +18,7 @@ HTTP框架：gin \
 ORM框架：gorm   \
 OSS服务：minio  \
 视频抽帧：ffmpeg   \
-项目部署：docker \
+项目部署：docker 
 
 
 ### 其它技术的使用
