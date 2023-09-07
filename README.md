@@ -12,13 +12,19 @@
 其中的配置信息config.yaml需要依据各自的情况进行修改，包括mysql数据库、Minio分布式存储系统； 以及service包下的videoservice的GetImage的ffmpeg的路径。（Minio主要用于视频的云端存储，生成的url存储在本地数据库）
 
 ## 技术选型:
-语言：golang \
-HTTP框架：gin \
-数据库：mysql,  redis \
-ORM框架：gorm   \
-OSS服务：minio  \
-视频抽帧：ffmpeg   \
-项目部署：docker 
+**语言**：golang 
+
+**HTTP框架**：gin 
+
+**数据库**：mysql,  redis 
+
+**ORM框架**：gorm   
+
+**OSS服务**：minio  
+
+**视频抽帧**：ffmpeg   
+
+**项目部署**：docker 
 
 
 ### 其它技术的使用
