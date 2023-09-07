@@ -1,4 +1,3 @@
-![image](https://github.com/137TEDdy/douyinProject/assets/120385461/aa446fe7-d99f-4848-b810-28c4c2f4c63f)
 # TikTok
 字节青训营的抖音项目
 
