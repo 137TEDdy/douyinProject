@@ -11,17 +11,18 @@
 
 其中的配置信息config.yaml需要依据各自的情况进行修改，包括mysql数据库、Minio分布式存储系统； 以及service包下的videoservice的GetImage的ffmpeg的路径。（Minio主要用于视频的云端存储，生成的url存储在本地数据库）
 
-## 项目结构
-![image](https://github.com/137TEDdy/douyinProject/assets/120385461/c875897f-7a63-47c4-8f98-a3a7b4c0b0e3)
-
 ## 技术选型:
-框架使用：gorm，gin
-数据库：mysql,  redis
-中间件：ffmpeg，jwt，minio
+语言：golang \
+HTTP框架：gin \
+数据库：mysql,  redis \
+ORM框架：gorm   \
+OSS服务：minio  \
+视频抽帧：ffmpeg   \
+项目部署：docker \
+
 
 ### 其它技术的使用
 1.viper库配置管理
-![image](https://github.com/137TEDdy/douyinProject/assets/120385461/da14e84d-eb1c-4a81-945a-1e51141803e1)
 
 2.zap日志框架
 
@@ -35,7 +36,6 @@
 密码加密使用bcrypt密码哈希函数，将密码与随机生成的盐值进行混合，并重复计算哈希值来增加密码的安全性，可以有效地防止常见的密码攻击，如彩虹表攻击和暴力破解。
 token使用HS256算法进行签名
 
-7.引入redis缓存优化
 
 
 
